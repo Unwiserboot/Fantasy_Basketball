@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import sys
 print(sys.version)
 
@@ -7,11 +8,8 @@ fanduel_data = open('fanduel_data.csv')
 fanduel_data = csv.reader(fanduel_data)
 
 
-#for row in fanduel_data:
-  #print (row)
-
-
-
+# for row in fanduel_data:
+#print (row)
 
 
 from openpyxl import Workbook
@@ -30,4 +28,4 @@ for row in fanduel_data:
         ws1.append(row)
 
 
-wb.save(filename = dest_filename)
+wb.save(filename=dest_filename)
