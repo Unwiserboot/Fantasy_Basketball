@@ -1,3 +1,15 @@
-# Fantasy_Basketball
+Fantasy Basketball
+=====================
 
-readme file
+Description
+______________
+
+
+
+Goals
+______________
+
+
+
+How to Use
+_____________
