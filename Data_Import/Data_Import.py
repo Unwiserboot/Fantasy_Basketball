@@ -30,7 +30,7 @@ response.raise_for_status()  # raise exception if invalid response
 data = response.json()['resultSets'][0]['rowSet']  # Player data
 header = response.json()['resultSets'][0]['headers']  # Header abbreviations
 
-with open('regular_season_traditional_data.csv', 'w') as fw:  # Export data to excel file
+with open('reg_sea_trad.csv', 'w') as fw:  # Export data to excel file
     csv.writer(fw).writerow(header)
     csv.writer(fw).writerows(data)
 
@@ -50,7 +50,7 @@ response.raise_for_status()  # raise exception if invalid response
 data = response.json()['resultSets'][0]['rowSet']  # Player data
 header = response.json()['resultSets'][0]['headers']  # Header abbreviations
 
-with open('regular_season_defensive_data.csv', 'w') as fw:  # Export data to excel file
+with open('reg_sea_def.csv', 'w') as fw:  # Export data to excel file
     csv.writer(fw).writerow(header)
     csv.writer(fw).writerows(data)
 
@@ -70,6 +70,6 @@ response.raise_for_status()  # raise exception if invalid response
 data = response.json()['resultSets'][0]['rowSet']  # Player data
 header = response.json()['resultSets'][0]['headers']  # Header abbreviations
 
-with open('regular_season_advanced_data.csv', 'w') as fw:  # Export data to excel file
+with open('reg_sea_adv.csv', 'w') as fw:  # Export data to excel file
     csv.writer(fw).writerow(header)
     csv.writer(fw).writerows(data)

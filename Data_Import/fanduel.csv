@@ -1,4 +1,4 @@
-Id,Position,First Name,Last Name,FPPG,Played,Salary,Game,Team,Opponent,Injury Indicator,Injury Details
+id,position,first_name,last_name,fppg,played,salary,game,team,opponent,injury_indicator,injury_detail
 9642,PG,Russell,Westbrook,50.7,7,10900,OKC@WAS,OKC,WAS,,
 15755,PF,Anthony,Davis,45.4,6,10800,DAL@NO,NO,DAL,,
 9646,SF,Kevin,Durant,44.9,7,10400,OKC@WAS,OKC,WAS,,
