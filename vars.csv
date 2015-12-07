@@ -1,31 +1,31 @@
-teams_playing,num_teams_playing,salary_cap,average_per_player,three_point_shot,two_point_shot,free_throw,rebounds,assists,blocked_shots,steals,turnovers,position,team_abbrev,team,injury_indicator,injury_details
-ATL,9,60000,6666,3,2,1,1.2,1.5,2,2,-1,PG,ATL,Atlanta Hawks,O,Achilles
-CLE,,,,,,,,,,,,PF,BKN,Brooklyn Nets,GTD,Ankle
-DAL,,,,,,,,,,,,C,BOS,Boston Celtics,IR,Back
-MEM,,,,,,,,,,,,SF,CHA,Charlotte Hornets,NA,Calf
-MIA,,,,,,,,,,,,SG,CHI,Chicago Bulls,,Foot
-MIL,,,,,,,,,,,,,CLE,Cleveland Cavaliers,,Hamstring
-MIN,,,,,,,,,,,,,DAL,Dallas Mavericks,,Illness
-NO,,,,,,,,,,,,,DEN,Denver Nuggets,,Knee
-NY,,,,,,,,,,,,,DET,Detroit Pistons,,Leg
-,,,,,,,,,,,,,GS,Golden State Warriors,,Pectoral
-,,,,,,,,,,,,,HOU,Houston Rockets,,Shoulder
-,,,,,,,,,,,,,IND,Indiana Pacers,,Toe
-,,,,,,,,,,,,,LAC,Los Angeles Clippers,,Undisclosed
-,,,,,,,,,,,,,LAL,Los Angeles Lakers,,
-,,,,,,,,,,,,,MEM,Memphis Grizzlies,,
-,,,,,,,,,,,,,MIA,Miami Heat,,
-,,,,,,,,,,,,,MIL,Milwaukee Bucks,,
-,,,,,,,,,,,,,MIN,Minnesota Timberwolves,,
-,,,,,,,,,,,,,NO,New Orleans Pelicans,,
-,,,,,,,,,,,,,NY,New York Knicks,,
-,,,,,,,,,,,,,OKC,Oklahoma City Thunder,,
-,,,,,,,,,,,,,ORL,Orlando Magic,,
-,,,,,,,,,,,,,PHI,Philadelphia 76ers,,
-,,,,,,,,,,,,,PHX,Phoenix Suns,,
-,,,,,,,,,,,,,POR,Portland Trail Blazers,,
-,,,,,,,,,,,,,SAC,Sacramento Kings,,
-,,,,,,,,,,,,,SA,San Antonio Spurs,,
-,,,,,,,,,,,,,TOR,Toronto Raptors,,
-,,,,,,,,,,,,,UTA,Utah Jazz,,
-,,,,,,,,,,,,,WAS,Washington Wizards,,
+salary_cap,average_per_player,three_point_shot,two_point_shot,free_throw,rebounds,assists,blocked_shots,steals,turnovers,position,team_abbrev,team,injury_indicator,injury_details
+60000,6666,3,2,1,1.2,1.5,2,2,-1,PG,ATL,Atlanta Hawks,O,Achilles
+,,,,,,,,,,PF,BKN,Brooklyn Nets,GTD,Ankle
+,,,,,,,,,,C,BOS,Boston Celtics,IR,Back
+,,,,,,,,,,SF,CHA,Charlotte Hornets,NA,Calf
+,,,,,,,,,,SG,CHI,Chicago Bulls,,Foot
+,,,,,,,,,,,CLE,Cleveland Cavaliers,,Hamstring
+,,,,,,,,,,,DAL,Dallas Mavericks,,Illness
+,,,,,,,,,,,DEN,Denver Nuggets,,Knee
+,,,,,,,,,,,DET,Detroit Pistons,,Leg
+,,,,,,,,,,,GS,Golden State Warriors,,Pectoral
+,,,,,,,,,,,HOU,Houston Rockets,,Shoulder
+,,,,,,,,,,,IND,Indiana Pacers,,Toe
+,,,,,,,,,,,LAC,Los Angeles Clippers,,Undisclosed
+,,,,,,,,,,,LAL,Los Angeles Lakers,,
+,,,,,,,,,,,MEM,Memphis Grizzlies,,
+,,,,,,,,,,,MIA,Miami Heat,,
+,,,,,,,,,,,MIL,Milwaukee Bucks,,
+,,,,,,,,,,,MIN,Minnesota Timberwolves,,
+,,,,,,,,,,,NO,New Orleans Pelicans,,
+,,,,,,,,,,,NY,New York Knicks,,
+,,,,,,,,,,,OKC,Oklahoma City Thunder,,
+,,,,,,,,,,,ORL,Orlando Magic,,
+,,,,,,,,,,,PHI,Philadelphia 76ers,,
+,,,,,,,,,,,PHX,Phoenix Suns,,
+,,,,,,,,,,,POR,Portland Trail Blazers,,
+,,,,,,,,,,,SAC,Sacramento Kings,,
+,,,,,,,,,,,SA,San Antonio Spurs,,
+,,,,,,,,,,,TOR,Toronto Raptors,,
+,,,,,,,,,,,UTA,Utah Jazz,,
+,,,,,,,,,,,WAS,Washington Wizards,,
