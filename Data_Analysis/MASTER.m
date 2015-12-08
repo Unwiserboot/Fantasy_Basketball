@@ -44,7 +44,7 @@
     end
 
     
-%SECTION A.3    
+%SECTION A.2    
     %Define fanduel scoring
     scoring = cell2table(cell(1,10));
     scoring.Properties.VariableNames = {'salary_cap','average_per_player','three_point','two_point',...
@@ -61,7 +61,7 @@
     scoring.turnovers = import{1,2}.turnovers(1);
 
  
-%SECTION A.4    
+%SECTION A.3    
     %Assign NBA player ID number to fandual data
     
     %Split player first and last names into separate columns from
@@ -85,14 +85,14 @@
 
     %find player names and transfer player id number from traditional
     %spreadsheet to fanduel spreadsheet
-    for i = 1:length(import{2,2}.last_name)
+    for i = 1:length(import{2,2}.lastname)
         
         %Look for similar last names
-        compare_lastname = strcmpi(import{2,2}.last_name(i), player_names(:,2));
+        compare_lastname = strcmpi(import{2,2}.lastname(i), player_names(:,2));
         row_lastname = find(compare_lastname == 1);
         
         %Look for similar first names
-        compare_firstname = strcmpi(import{2,2}.first_name(i), player_names(:,1));
+        compare_firstname = strcmpi(import{2,2}.firstname(i), player_names(:,1));
         row_firstname = find(compare_firstname == 1);
         
         %Look for similar team names
@@ -108,8 +108,20 @@
         import{2,2}.Properties.VariableNames = temp6;
         
         import{2,2}.player_id(i) = 0; %Check to make sure number was modified
-        import{2,2}.player_id(i) = import{5,2}.player_id(row_trad); %Change number in im_fandual player id number
+        
+        %output message if no data is available for a player, usually a new
+        %player
+        if isnan(row_trad) == 1
+             
+            display(['No data available for' import{2,2}.firstname(i) import{2,2}.lastname(i)])
+            
+        else
+            
+             import{2,2}.player_id(i) = import{5,2}.player_id(row_trad); %Change number in im_fandual player id number
                                                                     %to number used in im_reg_sea_trad    
+                                                                    
+        end
+      
     end
 
         
@@ -117,7 +129,7 @@
 %      player_name = cell2table(player_names,'VariableNames',{'first_name' 'last_name'});
 
         
-%SECTION A.5
+%SECTION A.4
     %Assign team ID from NBA.com number to fandual data in new columns
 
     %Create two empty single column tables in fandual table
@@ -172,7 +184,7 @@
 
 
 
-%SECTION A.6
+%SECTION A.5
     %Define variables
     variables{1,2} = cell2table(import{1,2}.position(1:5)); %Player Positions
     variables{1,2}.Properties.VariableNames = {'player_positions'};
@@ -212,53 +224,18 @@
 %This section run the prescribed analysis to assist in picking the best NBA
 %line up for the given games that night
 
-
-
 %SECTION B.1
-    %Calculate opponent difficulty by team and position
+    %Calculate opponent team difficulty by team and position
+    analysis_team
+
     
     
-%     
-%     %final output file
-%     rating_opp_team = cell2table(cell(height(im_reg_sea_team_opp),6));
-%     rating_opp_team.Properties.VariableNames = {'team_id','team_name','team_rating','center_rating','forward_rating','guard_rating'};
-%     rating_opp_team.team_id = im_reg_sea_team_opp.TEAM_ID;
-%     rating_opp_team.team_name = im_reg_sea_team_opp.TEAM_NAME;
-% 
-%     %Analysis per category
-%     temp = cell2table(cell(height(im_reg_sea_team_opp),3));
-%     temp.Properties.VariableNames = {'team_id','data','rating'};
-%     temp.data = im_reg_sea_team_opp.OPP_STL;
-%     temp.data = im_reg_sea_team_opp.TEAM_ID;
-%     
-%     uniq = unique(temp.data);
-%     
-%     
-%     for i = 1:length(uniq)
-%             
-%            big = find(temp.data == max(temp.data));
-%            
-%            temp.rating(big) = {i};
-%            temp.data(big) = 0;
-%     end
-%     
     
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    
+    
+    
+    
+    
 
 
 
@@ -304,7 +281,9 @@
           j...
           row_opp_name...
           row_team_name...
-          compare_team_id
+          compare_team_id...
+          k...
+          n
 
       
 %SECTION C.5
