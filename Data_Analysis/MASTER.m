@@ -7,12 +7,6 @@
 %SECTION A
 %This section imports and cleans up data in preparation for analysis
 
-%Naming variables
-
-
-
-
-
 %SECTION A.1
     %Import data from spreadsheets in tables  
     import{1,2} = import_vars('vars.csv');
@@ -236,8 +230,38 @@
     
     
     
-
-
+    
+    
+    
+%SECTION B.10
+    %prepare analysis for lineup optimization
+    
+    num_players = height(import{2,2});
+    analysis_players = [import{2,2}(:,1:4)];
+    analysis_players.salary = import{2,2}.salary;
+    analysis_players.injuryindicator = import{2,2}.injuryindicator;
+    analysis_players.injurydetails = import{2,2}.injurydetails;
+    
+    temp8 = array2table(zeros(num_players,2));
+    temp8.Properties.VariableNames = {'opp_team_rating', 'opp_team_position_rating'};
+    analysis_players = [analysis_players temp8];
+    
+    %assign opposing team analysis to specific players
+    
+    for i = 1:num_players
+        
+        compare_team_id = eq(analysis_teams{1,2}.team_id, import{2,2}.opp_id(i));
+        row_team_name = find(compare_team_id == 1);
+        analysis_players.opp_team_rating(i) = analysis_teams{1,2}.team_rating(row_team_name);
+        
+        [analysis_players] = opp_position_rating(analysis_teams, analysis_players, import, row_team_name, i);
+   
+        
+    end
+    
+    
+    
+    
 
 %SECTION B
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -247,7 +271,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %SECTION C
-%This section
+%This section runs lineup optimization
 
 
 
