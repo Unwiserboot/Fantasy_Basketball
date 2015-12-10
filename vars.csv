@@ -1,4 +1,4 @@
-salary_cap,average_per_player,three_point_shot,two_point_shot,free_throw,rebounds,assists,blocked_shots,steals,turnovers,position,team_abbrev,team,injury_indicator,injury_details
+salary_cap,average_per_player,three_point,two_point,free_throw,rebounds,assists,blocks,steals,turnovers,position,team_abbrev,team,injury_indicator,injury_details
 60000,6666,3,2,1,1.2,1.5,2,2,-1,PG,ATL,Atlanta Hawks,O,Achilles
 ,,,,,,,,,,PF,BKN,Brooklyn Nets,GTD,Ankle
 ,,,,,,,,,,C,BOS,Boston Celtics,IR,Back
@@ -8,7 +8,7 @@ salary_cap,average_per_player,three_point_shot,two_point_shot,free_throw,rebound
 ,,,,,,,,,,,DAL,Dallas Mavericks,,Illness
 ,,,,,,,,,,,DEN,Denver Nuggets,,Knee
 ,,,,,,,,,,,DET,Detroit Pistons,,Leg
-,,,,,,,,,,,GS,Golden State Warriors,,Pectoral
+,,,,,,,,,,,GSW,Golden State Warriors,,Pectoral
 ,,,,,,,,,,,HOU,Houston Rockets,,Shoulder
 ,,,,,,,,,,,IND,Indiana Pacers,,Toe
 ,,,,,,,,,,,LAC,Los Angeles Clippers,,Undisclosed
@@ -17,15 +17,15 @@ salary_cap,average_per_player,three_point_shot,two_point_shot,free_throw,rebound
 ,,,,,,,,,,,MIA,Miami Heat,,
 ,,,,,,,,,,,MIL,Milwaukee Bucks,,
 ,,,,,,,,,,,MIN,Minnesota Timberwolves,,
-,,,,,,,,,,,NO,New Orleans Pelicans,,
-,,,,,,,,,,,NY,New York Knicks,,
+,,,,,,,,,,,NOP,New Orleans Pelicans,,
+,,,,,,,,,,,NYK,New York Knicks,,
 ,,,,,,,,,,,OKC,Oklahoma City Thunder,,
 ,,,,,,,,,,,ORL,Orlando Magic,,
 ,,,,,,,,,,,PHI,Philadelphia 76ers,,
 ,,,,,,,,,,,PHO,Phoenix Suns,,
 ,,,,,,,,,,,POR,Portland Trail Blazers,,
 ,,,,,,,,,,,SAC,Sacramento Kings,,
-,,,,,,,,,,,SA,San Antonio Spurs,,
+,,,,,,,,,,,SAS,San Antonio Spurs,,
 ,,,,,,,,,,,TOR,Toronto Raptors,,
 ,,,,,,,,,,,UTA,Utah Jazz,,
 ,,,,,,,,,,,WAS,Washington Wizards,,

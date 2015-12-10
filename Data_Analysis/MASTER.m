@@ -1,4 +1,5 @@
 %Master script
+    %run this script after running python script to analyze nba data and create optimal nba lineup    
     ccc
     
 %%
@@ -8,76 +9,69 @@
 %This section imports and cleans up data in preparation for analysis
 
 %SECTION A.1
-    %Import data from spreadsheets in tables  
-    import{1,2} = import_vars('vars.csv');
-    import{1,1} = 'vars';
-    import{2,2} = import_fanduel('fanduel.csv');
-    import{2,1} = 'fanduel'; 
-    import{3,2} = import_adv('reg_sea_player_adv.csv');
-    import{3,1} = 'reg_sea_player_adv'; 
-    import{4,2} = import_def('reg_sea_player_def.csv');
-    import{4,1} = 'reg_sea_player_def';
-    import{5,2} = import_trad('reg_sea_player_trad.csv');
-    import{5,1} = 'reg_sea_player_trad';
-    import{6,2} = import_team_trad('reg_sea_team_trad.csv');
-    import{6,1} = 'reg_sea_team_trad';
-    import{7,2} = import_team_opp('reg_sea_team_opp.csv');
-    import{7,1} = 'reg_sea_team_opp';
-    import{8,2} = import_team_opp('reg_sea_team_opp_forward.csv');
-    import{8,1} = 'reg_sea_team_opp_forward';
-    import{9,2} = import_team_opp('reg_sea_team_opp_center.csv');
-    import{9,1} = 'reg_sea_team_opp_center';
-    import{10,2} = import_team_opp('reg_sea_team_opp_guard.csv');
-    import{10,1} = 'reg_sea_team_opp_guard';
-    
-    %Make all table variables lower case
-    for i = 1:length(import)
-         
-        %rename variable names to lowercase
-        import{i,2}.Properties.VariableNames = lower(import{i,2}.Properties.VariableNames);        
-    end
-
+    %import csv data files into matlab and deposit them in import variable
+    import_script
     
 %SECTION A.2    
-    %Define fanduel scoring
-    scoring = cell2table(cell(1,10));
-    scoring.Properties.VariableNames = {'salary_cap','average_per_player','three_point','two_point',...
-                                                'free_throw','rebounds','assists','blocked_shots','steals','turnovers'};
-    scoring.salary_cap = import{1,2}.salary_cap(1);
-    scoring.average_per_player = import{1,2}.average_per_player(1);
-    scoring.three_point = import{1,2}.three_point_shot(1);
-    scoring.two_point = import{1,2}.two_point_shot(1);
-    scoring.free_throw = import{1,2}.free_throw(1);
-    scoring.rebounds = import{1,2}.rebounds(1);
-    scoring.assists = import{1,2}.assists(1);
-    scoring.blocked_shots = import{1,2}.blocked_shots(1);
-    scoring.steals = import{1,2}.steals(1);
-    scoring.turnovers = import{1,2}.turnovers(1);
+    %create scoring variable to hold scoring scheme
+    scoring = import{1,2};
+    scoring(:,[11:15]) = [];
+    scoring([2:end],:) = [];
 
- 
-%SECTION A.3    
-    %Assign NBA player ID number to fandual data
-    
-    %Split player first and last names into separate columns from
-    %traditional file
-    temp = import{5,2}.player_name;
+%SECTION A.3
+    %make team abbreviation in fandual table the same as NBA.com data
+    %need to check for incorrect abbreviation in fanduel spreadsheet on a
+    %given night
+    for i = 1:2
+        compare_lastname = strcmpi(import{2,2}.(i+8), 'NO'); %New Orleans
+        row = find(compare_lastname == 1);
+        import{2,2}.(i+8)(row) = {'NOP'};
 
-    for i = 1:length(temp)
+        compare_lastname = strcmpi(import{2,2}.(i+8), 'PHO'); %Phonenix
+        row = find(compare_lastname == 1);
+        import{2,2}.(i+8)(row) = {'PHX'};
+        
+        compare_lastname = strcmpi(import{2,2}.(i+8), 'SA'); %San Antonio
+        row = find(compare_lastname == 1);
+        import{2,2}.(i+8)(row) = {'SAS'};
+        
+        compare_lastname = strcmpi(import{2,2}.(i+8), 'NY'); %New York
+        row = find(compare_lastname == 1);
+        import{2,2}.(i+8)(row) = {'NYK'};
+        
+        compare_lastname = strcmpi(import{2,2}.(i+8), 'GS'); %Golden State
+        row = find(compare_lastname == 1);
+        import{2,2}.(i+8)(row) = {'GSW'};
 
-        temp1 = strsplit(temp{i});
-
-        if length(temp1) <= 2
-
-            player_names(i,:) = temp1;
-
-        elseif length(temp1) > 2
-
-            player_names(i,:) = {temp1{1,1},temp1{1,end}};
-
-        end
+        compare_lastname = strcmpi(import{2,2}.(i+8), 'SA'); %San Antonio
+        row = find(compare_lastname == 1);
+        import{2,2}.(i+8)(row) = {'SAS'};
     end
+    
+    clear i row
+    
+%SECTION A.4    
+    %replace fanduel player id number with nba.com player id number
+    
+        %split player first and last names from reg_sea_player_trad
+        %into separate columns 
+        temp = import{5,2}.player_name;
 
-    %find player names and transfer player id number from traditional
+        for i = 1:length(temp)
+
+            temp1 = strsplit(temp{i});
+
+            if length(temp1) > 2
+                %throw away middle name  
+                player_names(i,:) = {temp1{1,1},temp1{1,end}};
+                
+            else
+                
+                player_names(i,:) = temp1;          
+            end
+        end
+        
+    %transfer player id number from traditional
     %spreadsheet to fanduel spreadsheet
     for i = 1:length(import{2,2}.lastname)
         
@@ -93,13 +87,13 @@
         compare_team = strcmpi(import{2,2}.team(i), import{5,2}.team_abbreviation);
         row_team = find(compare_team == 1);
         
-        %Compare row numbers from last names, first names and team names. Take the most common row number
+        %Compare row numbers from last names, first names and team names. 
+        %Take the most common row number
         rows = [row_lastname; row_firstname; row_team];
         row_trad = mode(rows);
         
-        temp6 = import{2,2}.Properties.VariableNames;
-        temp6{1,1} = 'player_id';
-        import{2,2}.Properties.VariableNames = temp6;
+        %rename variable 1 in fandual data to player_id
+        import{2,2}.Properties.VariableNames(1) = {'player_id'};
         
         import{2,2}.player_id(i) = 0; %Check to make sure number was modified
         
@@ -111,74 +105,52 @@
             
         else
             
-             import{2,2}.player_id(i) = import{5,2}.player_id(row_trad); %Change number in im_fandual player id number
-                                                                    %to number used in im_reg_sea_trad    
-                                                                    
-        end
-      
+             import{2,2}.player_id(i) = import{5,2}.player_id(row_trad); %Change number in im_fandual player id
+                                                                         %to id from im_reg_sea_trad                                                               
+        end      
     end
-
-        
+    
 %      player last and first names as a table from traditional csv     
 %      player_name = cell2table(player_names,'VariableNames',{'first_name' 'last_name'});
 
+    clear temp i player_names row_lastname row_firstname row_trad row_team rows...
+          compare_firstname compare_lastname
         
-%SECTION A.4
-    %Assign team ID from NBA.com number to fandual data in new columns
+%SECTION A.5
+    %Assign team ID from NBA.com to fandual data in new columns
 
     %Create two empty single column tables in fandual table
-    temp3 = array2table(import{2,2}.player_id);
-    temp3.Properties.VariableNames = {'team_id'};
+    temp = array2table(import{2,2}.player_id);
+    temp.Properties.VariableNames = {'team_id'};
     
-    temp7 = temp3;
-    temp7.Properties.VariableNames = {'opp_id'};
+    temp1 = temp;
+    temp1.Properties.VariableNames = {'opp_id'};
     
-    import{2,2} = [import{2,2}(:,1:8) temp3 import{2,2}(:,9) temp7 import{2,2}(:,10:12)];
+    import{2,2} = [import{2,2}(:,1:8) temp import{2,2}(:,9) temp1 import{2,2}(:,10:12)];
     
-    %create a temporary file to hold team names, abbreviations and id
-    %numbers
-    temp4 = cell2table(cell(length(import{1,2}.team_abbrev),1));
-    temp4.Properties.VariableNames = {'team_abbrev'};
-    
-    temp2 = [import{6,2}(:,1:2) temp4];
-     
-
-    for i = 1:length(import{6,2}.team_id)
+    for i = 1:height(import{6,2})
         
-        %Assigne team abbreviations to temp table
-        compare_team_name = strcmpi(temp2.team_name(i), import{1,2}.team);
-        row_team = find(compare_team_name == 1);
-        temp2.team_abbrev(row_team) = import{1,2}.team_abbrev(i);
-
-        %Find row numbers for team name
-        compare_team_name2 = strcmpi(temp2.team_abbrev(row_team), import{2,2}.team);
-        row_team_name = find(compare_team_name2 == 1);
+        %compare team abbrev
+        compare_team = strcmpi(import{2,2}.team, import{1,2}.team_abbrev(i)); 
+        row_team = find(compare_team == 1);
         
-        %Find row numbers for opponent name
-        compare_opp_name = strcmpi(temp2.team_abbrev(row_team), import{2,2}.opponent);
-        row_opp_name = find(compare_opp_name == 1);
+        %compare opp abbrev
+        compare_opp = strcmpi(import{2,2}.opponent, import{1,2}.team_abbrev(i));
+        row_opp = find(compare_opp == 1);
         
-        %Assign team number for team name
-        for j = 1:length(row_team_name)
-            
-            import{2,2}.team_id(row_team_name(j)) = temp2.team_id(row_team);
-            %import{2,2}.player_id(i) = import{5,2}.player_id(row_trad);
-        end
+        %compare team name
+        compare_nba = strcmpi(import{6,2}.team_name, import{1,2}.team(i)); 
+        row_nba = find(compare_nba == 1);
         
-        %Assign team number for opponent name 
-        for j = 1:length(row_opp_name)
-            
-            import{2,2}.opp_id(row_opp_name(j)) = temp2.team_id(row_team);
+        import{2,2}.(9)(row_team) = import{6,2}.team_id(row_nba); %assigne team id
+        import{2,2}.(11)(row_opp) = import{6,2}.team_id(row_nba); %assign opp id
         
-        end 
     end
-
-    %create table with team names, team abbreviations and team id numbers    
-    team_names = temp2;
-
-
-
-%SECTION A.5
+    
+    clear temp temp1 i row_nba row_opp row_team compare_team compare_opp compare_nba
+    
+%STOP CODE CHECK.............................
+%SECTION A.6
     %Define variables
     variables{1,2} = cell2table(import{1,2}.position(1:5)); %Player Positions
     variables{1,2}.Properties.VariableNames = {'player_positions'};
@@ -200,11 +172,6 @@
         variables{2,2}.team_name(j) = {team_names.team_name(row_team_name)};
 
     end 
-
-    
-    
-    
-
 
 
 %SECTION A
