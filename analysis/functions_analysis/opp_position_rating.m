@@ -1,29 +1,27 @@
-function [ analysis_players ] = opp_position_rating(analysis_teams, analysis_players, import, row_team_name, i)
-%Assigne opponent position team rating to a player
-%   Detailed explanation goes here
+function [ analysis_players ] = opp_position_rating(analysis_teams, analysis_players, row_team_name, i)
+%SECTION B.10
+%Assigne opponent position team rating to each player
 
-
-    if strcmp(import{2,2}.position(1), 'PF') == 1
+    if strcmp(analysis_players.position(i), 'PF') == 1
 
         analysis_players.opp_team_position_rating(i) = analysis_teams{1,2}.forward_rating(row_team_name);
 
-    elseif strcmp(import{2,2}.position(1), 'C') == 1
+    elseif strcmp(analysis_players.position(i), 'C') == 1
 
         analysis_players.opp_team_position_rating(i) = analysis_teams{1,2}.center_rating(row_team_name);
 
-    elseif strcmp(import{2,2}.position(1), 'PG') == 1
+    elseif strcmp(analysis_players.position(i), 'PG') == 1
 
         analysis_players.opp_team_position_rating(i) = analysis_teams{1,2}.guard_rating(row_team_name);
 
-    elseif strcmp(import{2,2}.position(1), 'SG') == 1
+    elseif strcmp(analysis_players.position(i), 'SG') == 1
 
         analysis_players.opp_team_position_rating(i) = analysis_teams{1,2}.guard_rating(row_team_name);
 
-    elseif strcmp(import{2,2}.position(1), 'SF') == 1
+    elseif strcmp(analysis_players.position(i), 'SF') == 1
 
         analysis_players.opp_team_position_rating(i) = analysis_teams{1,2}.forward_rating(row_team_name);  
 
     end
-
 end
 

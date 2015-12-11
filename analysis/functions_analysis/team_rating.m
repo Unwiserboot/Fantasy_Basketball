@@ -1,10 +1,8 @@
 function [ rating ] = team_rating( metric)
-%Calculate each teams fantasy points allowed
+%SECTION B.1, analysis_team.m 
+%rate teams on fantasy points allowed based on distance from the mean
+%a higher number is better for the player on the opposing team
 	%metric - data to rank
-    %num_teams - number of teams to analyze
-    %team_id - team id associated with ranking
-    %ranking - file output ranks teams from 1 to 30 for each metric. 30 is
-    %easiest for the opponent player and 1 is most difficult.
     num_teams = length(metric);
     rating = zeros(num_teams,1);
     average = mean(metric);

@@ -14,9 +14,9 @@
     
 %SECTION A.2    
     %create scoring variable to hold scoring scheme
-    scoring = import{1,2};
-    scoring(:,[11:15]) = [];
-    scoring([2:end],:) = [];
+    import_scoring = import{1,2};
+    import_scoring(:,[11:15]) = [];
+    import_scoring([2:end],:) = [];
 
 %SECTION A.3
     %make team abbreviation in fandual table the same as NBA.com data
@@ -149,29 +149,9 @@
     
     clear temp temp1 i row_nba row_opp row_team compare_team compare_opp compare_nba
     
-%STOP CODE CHECK.............................
 %SECTION A.6
-    %Define variables
-    variables{1,2} = cell2table(import{1,2}.position(1:5)); %Player Positions
-    variables{1,2}.Properties.VariableNames = {'player_positions'};
-    variables{1,1} = 'player_positions';
-    
-    %Identify teams playing
-    variables{2,1} = 'teams_playing';
-    temp8 = array2table(unique(import{2,2}.team_id));
-    temp8.Properties.VariableNames = {'team_id'};
-    temp9 = cell2table(cell(height(temp8),1));
-    temp9.Properties.VariableNames = {'team_name'};
-    variables{2,2} = [temp8 temp9];
-    
-    %Assign team number for opponent name 
-    for j = 1:height(variables{2,2})
-        
-        compare_team_id = eq(variables{2,2}.team_id(j), team_names.team_id);
-        row_team_name = find(compare_team_id == 1);
-        variables{2,2}.team_name(j) = {team_names.team_name(row_team_name)};
-
-    end 
+    %import data workspace
+    import_positions = import{1,2}.position(1:5);
 
 
 %SECTION A
@@ -186,48 +166,72 @@
 %line up for the given games that night
 
 %SECTION B.1
-    %Calculate opponent team difficulty by team and position
+    %prepare analysis for lineup optimization
+    num_players = height(import{2,2});
+    analysis_players = [import{2,2}(:,[1:5,7, 9:12])];
+    
+    temp = array2table(zeros(num_players,5));
+    temp.Properties.VariableNames = {'injury_rating', 'rating_total', 'opp_team_rating',...
+                                     'opp_team_position_rating','minutes_rating'};
+    analysis_players = [analysis_players temp];
+    
+    clear temp
+    
+%SECTION B.1
+    %Calculate opponent team fantasy points allowed by team and 
+    %player position
     analysis_team
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-%SECTION B.10
-    %prepare analysis for lineup optimization
-    
-    num_players = height(import{2,2});
-    analysis_players = [import{2,2}(:,1:4)];
-    analysis_players.salary = import{2,2}.salary;
-    analysis_players.injuryindicator = import{2,2}.injuryindicator;
-    analysis_players.injurydetails = import{2,2}.injurydetails;
-    
-    temp8 = array2table(zeros(num_players,2));
-    temp8.Properties.VariableNames = {'opp_team_rating', 'opp_team_position_rating'};
-    analysis_players = [analysis_players temp8];
-    
     %assign opposing team analysis to specific players
-    
     for i = 1:num_players
         
-        compare_team_id = eq(analysis_teams{1,2}.team_id, import{2,2}.opp_id(i));
-        row_team_name = find(compare_team_id == 1);
-        analysis_players.opp_team_rating(i) = analysis_teams{1,2}.team_rating(row_team_name);
+        %transfer opposing team rating
+        compare_team_id = eq(analysis_teams{1,2}.team_id, analysis_players.opp_id(i));
+        row_team = find(compare_team_id == 1);
+        analysis_players.opp_team_rating(i) = analysis_teams{1,2}.team_rating(row_team);
         
-        [analysis_players] = opp_position_rating(analysis_teams, analysis_players, import, row_team_name, i);
-   
+        %transfer opposing team rating for a specific position
+        [analysis_players] = opp_position_rating(analysis_teams, analysis_players, row_team, i);       
+    end
+    
+    clear i row_team compare_team_id temp     
+    
+%SECTION B.3
+    %assign rating for injuries
+    %1 - good to play
+    %2 - out of game
+    
+    for i = 1:num_players
+        if strcmp(import{2,2}.injuryindicator(i), 'O') == 1 
+            analysis_players.injury_rating(i) = 2;
+            
+        elseif strcmp(import{2,2}.injuryindicator(i), 'IR') == 1
+            analysis_players.injury_rating(i) = 2;
         
+        elseif strcmp(import{2,2}.injuryindicator(i), 'NA') == 1
+            analysis_players.injury_rating(i) = 2;
+        
+        else 
+            analysis_players.injury_rating(i) = 1;
+        end
     end
     
     
     
+    
+    
+    
+    
+    
+    
+
+
+    
+%SECTION B.11
+    %sum rating for each player 
+    
+    rating_multiplier = [1];%opponent team position rating
+                  
     
 
 %SECTION B
@@ -239,47 +243,11 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %SECTION C
 %This section runs lineup optimization
-
-
-
-%SECTION C.4
-    %Variables to delete from workspace
-    clear i...
-          compare_lastname...
-          compare_firstname...
-          compare_team...
-          row_lastname...
-          row_firstname...
-          row_team...
-          rows...
-          row_trad...
-          temp...
-          temp1...
-          temp2...
-          temp3...
-          temp4...
-          temp5...
-          temp6...
-          temp7...
-          temp8...
-          temp9...
-          tempnames...
-          playernames...
-          player_names...
-          compare_opp_name...
-          compare_team_name...
-          compare_team_name2...
-          j...
-          row_opp_name...
-          row_team_name...
-          compare_team_id...
-          k...
-          n
-
+   
       
 %SECTION C.5
     %Export workspace variables to .mat file
-    save(['/Users/ccm/Documents/Fantasy_Basketball/analysis_export/ex_workspace_variables'])
+    save(['/Users/ccm/Documents/Fantasy_Basketball/export/ex_workspace_variables'])
 
 
 %SECTION C
