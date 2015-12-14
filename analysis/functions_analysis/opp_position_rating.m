@@ -1,5 +1,5 @@
 function [ analysis_players ] = opp_position_rating(analysis_teams, analysis_players, row_team_name, i)
-%SECTION B.10
+%SECTION C.1
 %Assigne opponent position team rating to each player
 
     if strcmp(analysis_players.position(i), 'PF') == 1

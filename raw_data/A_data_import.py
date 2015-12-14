@@ -9,13 +9,7 @@
     #Section 6 - regular season team opponent forward
     #Section 7 - regular season team opponent center
     #Section 8 - regular season team opponent guard
-
-
-
-
-
-
-
+    #Section 9 - regular season player traditional 3 game
 
 #Indicator to use python3
 #!/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5
@@ -37,12 +31,7 @@ print(sys.version)
 #SECTION 1
 #2015 2016 Regular season player traditional
 
-url = 'http://stats.nba.com/stats/leaguedashplayerstats?College=&Conference=&Country=&' +\
-      'DateFrom=&DateTo=&Division=&DraftPick=&DraftYear=&GameScope=&GameSegment=&Height' +\
-      '=&LastNGames=0&LeagueID=00&Location=&MeasureType=Base&Month=0&OpponentTeamID=0&Out' +\
-      'come=&PORound=0&PaceAdjust=N&PerMode=PerGame&Period=0&PlayerExperience=&PlayerPosit' +\
-      'ion=&PlusMinus=N&Rank=N&Season=2015-16&SeasonSegment=&SeasonType=Regular+Season&Shot' +\
-      'ClockRange=&StarterBench=&TeamID=0&VsConference=&VsDivision=&Weight='
+url = 'http://stats.nba.com/stats/leaguedashplayerstats?College=&Conference=&Country=&DateFrom=&DateTo=&Division=&DraftPick=&DraftYear=&GameScope=&GameSegment=&Height=&LastNGames=0&LeagueID=00&Location=&MeasureType=Base&Month=0&OpponentTeamID=0&Outcome=&PORound=0&PaceAdjust=N&PerMode=PerGame&Period=0&PlayerExperience=&PlayerPosition=&PlusMinus=N&Rank=N&Season=2015-16&SeasonSegment=&SeasonType=Regular+Season&ShotClockRange=&StarterBench=&TeamID=0&VsConference=&VsDivision=&Weight='
 
 response = requests.get(url)
 response.raise_for_status()  # raise exception if invalid response
@@ -60,11 +49,7 @@ with open('reg_sea_player_trad.csv', 'w') as fw:  # Export data to excel file
 #SECTION 2
 #2015 2016 Regular season player defensive
 
-url = 'http://stats.nba.com/stats/leaguedashptdefend?College=&Conference=&Country=&DateFrom' +\
-       '=&DateTo=&DefenseCategory=Overall&Division=&DraftPick=&DraftYear=&GameSegment=&Height' +\
-       '=&LastNGames=0&LeagueID=00&Location=&Month=0&OpponentTeamID=0&Outcome=&PORound=0&PerMo' +\
-       'de=PerGame&Period=0&PlayerExperience=&PlayerPosition=&Season=2015-16&SeasonSegment=&Se' +\
-       'asonType=Regular+Season&StarterBench=&TeamID=0&VsConference=&VsDivision=&Weight='
+url = 'http://stats.nba.com/stats/leaguedashptdefend?College=&Conference=&Country=&DateFrom=&DateTo=&DefenseCategory=Overall&Division=&DraftPick=&DraftYear=&GameSegment=&Height=&LastNGames=0&LeagueID=00&Location=&Month=0&OpponentTeamID=0&Outcome=&PORound=0&PerMode=PerGame&Period=0&PlayerExperience=&PlayerPosition=&Season=2015-16&SeasonSegment=&SeasonType=Regular+Season&StarterBench=&TeamID=0&VsConference=&VsDivision=&Weight='
 
 response = requests.get(url)
 response.raise_for_status()  # raise exception if invalid response
@@ -81,12 +66,7 @@ with open('reg_sea_player_def.csv', 'w') as fw:  # Export data to excel file
 #SECTION 3
 #2015 2016 Regular season player advanced
 
-url = 'http://stats.nba.com/stats/leaguedashplayerstats?College=&Conference=&Country=&DateFrom=&Date' +\
-      'To=&Division=&DraftPick=&DraftYear=&GameScope=&GameSegment=&Height=&LastNGames=0&LeagueID=00&L' +\
-      'ocation=&MeasureType=Advanced&Month=0&OpponentTeamID=0&Outcome=&PORound=0&PaceAdjust=N&PerMode' +\
-      '=Totals&Period=0&PlayerExperience=&PlayerPosition=&PlusMinus=N&Rank=N&Season=2015-16&SeasonSeg' +\
-      'ment=&SeasonType=Regular+Season&ShotClockRange=&StarterBench=&TeamID=0&VsConference=&VsDivisio' +\
-      'n=&Weight='
+url = 'http://stats.nba.com/stats/leaguedashplayerstats?College=&Conference=&Country=&DateFrom=&DateTo=&Division=&DraftPick=&DraftYear=&GameScope=&GameSegment=&Height=&LastNGames=0&LeagueID=00&Location=&MeasureType=Advanced&Month=0&OpponentTeamID=0&Outcome=&PORound=0&PaceAdjust=N&PerMode=Totals&Period=0&PlayerExperience=&PlayerPosition=&PlusMinus=N&Rank=N&Season=2015-16&SeasonSegment=&SeasonType=Regular+Season&ShotClockRange=&StarterBench=&TeamID=0&VsConference=&VsDivision=&Weight='
 
 response = requests.get(url)
 response.raise_for_status()  # raise exception if invalid response
@@ -183,3 +163,22 @@ with open('reg_sea_team_opp_guard.csv', 'w') as fw:  # Export data to excel file
     csv.writer(fw).writerows(data)
 
 #SECTION 8
+##########################################################################################################
+##########################################################################################################
+#SECTION 9
+#2015 2016 Regular season team opponent center
+
+url = 'http://stats.nba.com/stats/leaguedashplayerstats?College=&Conference=&Country=&DateFrom=&DateTo=&Division=&DraftPick=&DraftYear=&GameScope=&GameSegment=&Height=&LastNGames=3&LeagueID=00&Location=&MeasureType=Base&Month=0&OpponentTeamID=0&Outcome=&PORound=0&PaceAdjust=N&PerMode=PerGame&Period=0&PlayerExperience=&PlayerPosition=&PlusMinus=N&Rank=N&Season=2015-16&SeasonSegment=&SeasonType=Regular+Season&ShotClockRange=&StarterBench=&TeamID=0&VsConference=&VsDivision=&Weight='
+
+response = requests.get(url)
+response.raise_for_status()  # raise exception if invalid response
+data = response.json()['resultSets'][0]['rowSet']  # Player data
+header = response.json()['resultSets'][0]['headers']  # Header abbreviations
+
+with open('reg_sea_player_trad_3gme.csv', 'w') as fw:  # Export data to excel file
+    csv.writer(fw).writerow(header)
+    csv.writer(fw).writerows(data)
+
+#SECTION 9
+##########################################################################################################
+##########################################################################################################

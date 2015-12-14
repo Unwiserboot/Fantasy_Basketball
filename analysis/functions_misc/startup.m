@@ -4,8 +4,6 @@ format compact
 
 path(genpath('/Users/ccm/Documents/Fantasy_Basketball'),path)
 
-open('master.m')
-
-%format long g
+format long
 
 
