@@ -4,6 +4,6 @@ format compact
 
 path(genpath('/Users/ccm/Documents/Fantasy_Basketball'),path)
 
-format long
+% format long
 
 

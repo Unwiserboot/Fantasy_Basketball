@@ -29,7 +29,7 @@
     
     for i = 1:3
     
-            analysis_teams{i+2,2} = analysis_teams{2,2};   
+        analysis_teams{i+2,2} = analysis_teams{2,2};   
     end
    
     temp_multiplier = [import_scoring.blocks;...        %blocks

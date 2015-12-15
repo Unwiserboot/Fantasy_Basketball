@@ -51,31 +51,33 @@
     
     clear i row
     
+    
 %SECTION A.3    
     %replace fanduel player id number with nba.com player id number
-    
-        %split player first and last names from reg_sea_player_trad
-        %into separate columns 
-        temp = import{5,2}.player_name;
-
-        for i = 1:length(temp)
-
-            temp1 = strsplit(temp{i});
-
-            if length(temp1) > 2
-                %throw away middle name  
-                player_names(i,:) = {temp1{1,1},temp1{1,end}};
-                
-            else
-                
-                player_names(i,:) = temp1;          
-            end
-        end
         
+    %split player first and last names from reg_sea_player_trad
+    %into separate columns 
+    temp = import{5,2}.player_name;
+
+    for i = 1:length(temp)
+
+        temp1 = strsplit(temp{i});
+
+        if length(temp1) > 2
+            %throw away middle name  
+            player_names(i,:) = {temp1{1,1},temp1{1,end}};
+
+        else
+
+            player_names(i,:) = temp1;          
+        end
+    end
+    
+    a = 0;
     %transfer player id number from traditional
     %spreadsheet to fanduel spreadsheet
     for i = 1:length(import{2,2}.lastname)
-        
+
         %Look for similar last names
         compare_lastname = strcmpi(import{2,2}.lastname(i), player_names(:,2));
         row_lastname = find(compare_lastname == 1);
@@ -93,24 +95,37 @@
         rows = [row_lastname; row_firstname; row_team];
         row_trad = mode(rows);
         
-        %rename variable 1 in fandual data to player_id
-        import{2,2}.Properties.VariableNames(1) = {'player_id'};
-        
-        import{2,2}.player_id(i) = 0; %Check to make sure number was modified
+%         import{2,2}.player_id(i) = 0; %Check to make sure number was modified
         
         %output message if no data is available for a player, usually a new
         %player
-        if isnan(row_trad) == 1
-             
+        if isempty(row_lastname) == 1 & isempty(row_firstname) == 1            
             display(['No data available for' import{2,2}.firstname(i) import{2,2}.lastname(i)])
-            
-        else
-            
-             import{2,2}.player_id(i) = import{5,2}.player_id(row_trad); %Change number in im_fandual player id
+            a = a+1;
+            import{2,2}.player_id(i) = a; %assigne dummy player id for players with no data
+        
+        elseif length(find(rows == row_trad)) == 1 %
+            display(['No data available for' import{2,2}.firstname(i) import{2,2}.lastname(i)])
+            a = a+1;
+            import{2,2}.player_id(i) = a; %assigne dummy player id for players with no data
+        
+        else            
+            import{2,2}.player_id(i) = import{5,2}.player_id(row_trad); %Change number in im_fandual player id
                                                                          %to id from im_reg_sea_trad                                                               
         end      
     end
     
+    %check for duplicate player ids
+    unique_ids = unique(import{2,2}.player_id);
+    num_unique = size(unique_ids,1);
+    num_players = size(import{2,2}.player_id,1);
+    
+    if num_players == num_unique
+    else
+         error('There are duplicate player ID numbers')
+        
+    end
+   
 %      player last and first names as a table from traditional csv     
 %      player_name = cell2table(player_names,'VariableNames',{'first_name' 'last_name'});
 
@@ -165,12 +180,12 @@
 %SECTION B.1
     %organize players with relevant data
     num_players = height(import{2,2});
-    analysis_players = cell(5,3);
+    analysis_players = cell(8,3);
         
-    temp = array2table(zeros(num_players,5));
+    temp = array2table(zeros(num_players,6));
     temp.Properties.VariableNames = {'injury_rating', 'opp_team_fp_allowed',...
                                      'opp_team_position_fp_allowed','minutes'...
-                                     'price_per_fp'};
+                                     'price_per_fp','fppg_3g'};
     analysis_players{2,2} =[import{2,2}(:,[1:5,7, 9:12]) temp];
     analysis_players{2,1} = 'All Players';
     analysis_players{1,2} = 'Data';
@@ -223,11 +238,62 @@
     analysis_players{2,2}.price_per_fp = analysis_players{2,2}.salary./analysis_players{2,2}.fppg;
     
 %SECTION B.5
-    %assigne minutes per game   
-    analysis_players{2,2}.minutes = comp_trans(num_players, import{5,2}.player_id, analysis_players{2,2}.player_id, import{5,2}.min);
+    %assign minutes per game   
+    analysis_players{2,2}.minutes = comp_trans(import{5,2}.player_id, analysis_players{2,2}.player_id, import{5,2}.min);
    
 %SECTION B.6
-    %...
+    %calculate player previous 3 game fppg
+    num_players = height(import{11,2});
+    temp_multiplier = [import_scoring.blocks,...        %blocks
+                       import_scoring.assists,...       %assists
+                       import_scoring.turnovers,...     %turnovers
+                       import_scoring.steals,...        %steals
+                       import_scoring.free_throw,...    %free throw
+                       import_scoring.rebounds,...      %rebounds
+                       import_scoring.three_point,...   %3 pts 
+                       import_scoring.two_point];       %2 pts 
+    
+    temp = import{11,2}(:,1); %player id
+    temp2 = array2table(zeros(num_players,1)); 
+    fppg_3g = [temp temp2];
+        
+    temp_data = [import{11,2}.blk,...                   %blocks
+                 import{11,2}.ast,...                   %assists
+                 import{11,2}.tov,...                   %turnovers
+                 import{11,2}.stl,...                   %steals
+                 import{11,2}.ftm,...                   %free throw
+                 import{11,2}.reb,...                   %rebounds
+                 import{11,2}.fg3m,...                  %3 pts 
+                 import{11,2}.fgm - import{11,2}.fg3m]; %2 pts 
+     
+     for i = 1:num_players         
+         
+         fppg_3g{i,2} = sum(temp_data(i,:).*temp_multiplier);        
+         
+     end
+
+      
+     
+     %transfer data to analysis_player{2,2}
+     rows =  size(analysis_players{2,2},1);
+     for i = 1:rows
+        compare = eq(fppg_3g{:,1}, analysis_players{2,2}.player_id(i));
+        row = find(compare == 1);
+        
+        if isempty(row) == 1
+            dest_data(i) = 0;
+            
+        else
+            analysis_players{2,2}.fppg_3g(i) = fppg_3g{row,2};
+     
+        end
+     end
+    
+    
+    
+    
+    
+    
       
 
 %SECTION B
@@ -252,8 +318,8 @@
     analysis_players{3,2} = analysis_players{2,2}(row,:);
 
     %Variables to compare
-    temp = array2table(zeros(num_rows,3));
-    temp.Properties.VariableNames = {'total', 'minutes', 'opp_team_position'};
+    temp = array2table(zeros(num_rows,5));
+    temp.Properties.VariableNames = {'total', 'minutes', 'opp_team_position','fppg', 'fppg_3g'};
 
     analysis_players{3,3} = [analysis_players{3,2}(:,[1, 3:4]) temp];
 
@@ -263,40 +329,53 @@
     %Calcualte variable ratings
     analysis_players{3,3}.minutes = variable_rating(analysis_players{3,2}.minutes);
 
+    %Calcualte variable ratings
+    analysis_players{3,3}.fppg = variable_rating(analysis_players{3,2}.fppg);
+
+    %Calcualte variable ratings
+%     analysis_players{3,3}.3g_fppg = variable_rating(analysis_players{3,2}.3g_fppg);
+    
+    
+    
     %calculate player rating
     analysis_players{3,3}.total = sum(analysis_players{3,3}{:,[5:end]},2);
 
+    
+    
+    
+    
+    
     clear num_rows temp row
 
 
 %SECTION C.2    
-    %Fill out the six remaining positions on the lineups
+    %organize players by position
     
     %Select players and create new cell for analysis
-    %Salary below $8000 and uninjured
-    analysis_players{4,1} = 'Remaining Six';
-    row = find(analysis_players{2,2}.salary < 8000 & analysis_players{2,2}.injury_rating == 1);
-    num_rows = length(row);
-    analysis_players{4,2} = analysis_players{2,2}(row,:);
+    %Salary below $8000 and uninjured, sorted by position
+    for j = 1:5
+        analysis_players{j+3,1} = import_positions{j};
+        row = find(analysis_players{2,2}.salary < 8000 & analysis_players{2,2}.injury_rating == 1 & strcmp(analysis_players{2,2}.position, import_positions{j}) == 1);
+        num_rows = length(row);
+        analysis_players{j+3,2} = analysis_players{2,2}(row,:);
+
+        %Variables to compare
+        temp = array2table(zeros(num_rows,5));
+        temp.Properties.VariableNames = {'total', 'minutes', 'opp_team_position','fppg','fppg_3g'};
+
+        analysis_players{j+3,3} = [analysis_players{j+3,2}(:,[1, 3:4]) temp];
+
+        %incorporate opposing team position fantasy points allowed rating
+        analysis_players{j+3,3}.opp_team_position = comp_trans_opp_pos(num_rows, analysis_teams{1,2}.team_id, analysis_players{j+3,2}.opp_id, analysis_teams{1,2}, analysis_players{j+3,2}.position);
+
+        %Calcualte variable ratings
+        analysis_players{j+3,3}.minutes = variable_rating(analysis_players{j+3,2}.minutes);
+
+        %calculate player rating
+        analysis_players{j+3,3}.total = sum(analysis_players{j+3,3}{:,[5:end]},2);    
+    end
     
-    %Variables to compare
-    temp = array2table(zeros(num_rows,3));
-    temp.Properties.VariableNames = {'total', 'minutes', 'opp_team_position'};
-
-    analysis_players{4,3} = [analysis_players{4,2}(:,[1, 3:4]) temp];
-
-    %incorporate opposing team position fantasy points allowed rating
-    analysis_players{4,3}.opp_team_position = comp_trans_opp_pos(num_rows, analysis_teams{1,2}.team_id, analysis_players{4,2}.opp_id, analysis_teams{1,2}, analysis_players{4,2}.position);
-
-    %Calcualte variable ratings
-    analysis_players{4,3}.minutes = variable_rating(analysis_players{4,2}.minutes);
-
-    %calculate player rating
-    analysis_players{4,3}.total = sum(analysis_players{4,3}{:,[5:end]},2);
-
     clear temp row num_rows num_players
-      
-
       
 
 %SECTION C

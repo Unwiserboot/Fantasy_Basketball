@@ -38,6 +38,8 @@ tic
 
     clear fp_total salary_total rating_total position teams i j k temp temp2 z
     toc
+    
+    
     tic
 %SECTION A.2
     %Calculate possible lineups with remaining players

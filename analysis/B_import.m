@@ -38,6 +38,9 @@
         %rename variable names to lowercase
         import_orig{i,2}.Properties.VariableNames = lower(import_orig{i,2}.Properties.VariableNames);        
     end
+      
+    %rename variable 1 in fandual data to player_id
+    import_orig{2,2}.Properties.VariableNames(1) = {'player_id'};
     
     clear i
 %SECTION A
