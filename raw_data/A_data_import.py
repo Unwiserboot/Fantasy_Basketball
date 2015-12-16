@@ -10,6 +10,7 @@
     #Section 7 - regular season team opponent center
     #Section 8 - regular season team opponent guard
     #Section 9 - regular season player traditional 3 game
+    #Section 10 - regular season team game logs
 
 #Indicator to use python3
 #!/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5
@@ -180,5 +181,22 @@ with open('reg_sea_player_trad_3gme.csv', 'w') as fw:  # Export data to excel fi
     csv.writer(fw).writerows(data)
 
 #SECTION 9
+##########################################################################################################
+##########################################################################################################
+#SECTION 10
+#2015 2016 regular season team game longs
+
+url = 'http://stats.nba.com/stats/leaguegamelog?Counter=1000&Direction=DESC&LeagueID=00&PlayerOrTeam=T&Season=2015-16&SeasonType=Regular+Season&Sorter=PTS'
+
+response = requests.get(url)
+response.raise_for_status()  # raise exception if invalid response
+data = response.json()['resultSets'][0]['rowSet']  # Player data
+header = response.json()['resultSets'][0]['headers']  # Header abbreviations
+
+with open('reg_sea_team_game_logs.csv', 'w') as fw:  # Export data to excel file
+    csv.writer(fw).writerow(header)
+    csv.writer(fw).writerows(data)
+
+#SECTION 10
 ##########################################################################################################
 ##########################################################################################################

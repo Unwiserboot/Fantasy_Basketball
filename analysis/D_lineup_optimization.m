@@ -164,8 +164,8 @@ toc
 
 
 % %SECTION C.5
-%     %Export workspace variables to .mat file
-%     save(['/Users/ccm/Documents/Fantasy_Basketball/export/ex_workspace_variables'])
+    %Export workspace variables to .mat file
+    save(['/Users/ccm/Documents/Fantasy_Basketball/export/ex_workspace_variables'])
 
 
 %SECTION b

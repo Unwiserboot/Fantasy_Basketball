@@ -33,8 +33,8 @@
     import_orig{11,1} = 'reg_sea_player_trad_3gme';
     
     %Make all table variables lower case for easy programming
-    for i = 1:length(import_orig)
-         
+    for i = 1:length(import_orig)         
+        
         %rename variable names to lowercase
         import_orig{i,2}.Properties.VariableNames = lower(import_orig{i,2}.Properties.VariableNames);        
     end
