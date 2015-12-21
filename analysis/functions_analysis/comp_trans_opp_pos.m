@@ -32,8 +32,7 @@ function [ dest_data ] = comp_trans_opp_pos(rows, org_id, dest_id, org_data, pla
 
         elseif strcmp(player_pos(i), 'SF') == 1
 
-            dest_data(i) = org_data.forward_rating(row);  
-
+            dest_data(i) = org_data.forward_rating(row); 
         end
     end
 end

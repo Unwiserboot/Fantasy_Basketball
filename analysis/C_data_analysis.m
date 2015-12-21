@@ -184,7 +184,9 @@
                  'min_3g',...
                  'price_per_fp_3g',...
                  'opp_team_fp_allowed_sea',...
-                 'opp_team_position_fp_allowed_sea'};
+                 'opp_team_position_fp_allowed_sea',...
+                 'team_pace_sea',...
+                 'opp_pace_sea'};
     temp = array2table(zeros(num_players,length(variables)));                            
     temp.Properties.VariableNames = variables;
                                  
@@ -192,6 +194,7 @@
     analysis_players{2,1} = 'All Players';
     analysis_players{1,2} = 'Data';
     analysis_players{1,3} = 'Ratings';
+    analysis_players{1,4} = 'Positive Rating';
     
     %delete players for whom there is no data on nba.com
     for i = 1:import_nodata
@@ -316,17 +319,21 @@
     % 1 - home
     % -1 - away
         
-    home = strncmp(analysis_players{2,2}.game, analysis_players{2,2}.team,3)
+    home = strncmp(analysis_players{2,2}.game, analysis_players{2,2}.team,3);
     rows = find(home == 1);
     analysis_players{2,2}.home_away(rows) = 1;   
 
-    away = strncmp(analysis_players{2,2}.game, analysis_players{2,2}.opponent,3)
+    away = strncmp(analysis_players{2,2}.game, analysis_players{2,2}.opponent,3);
     rows = find(away == 1);
     analysis_players{2,2}.home_away(rows) = -1;  
 
+    clear home away rows
 
-
+%Section B.10
+    %team pace season
     
+    analysis_players{2,2}.team_pace_sea = comp_trans(import{13,2}.team_id, analysis_players{2,2}.team_id,import{13,2}.pace);
+    analysis_players{2,2}.opp_pace_sea = comp_trans(import{13,2}.team_id, analysis_players{2,2}.opp_id,import{13,2}.pace);
     
     
     
@@ -361,34 +368,39 @@
     analysis_players{3,2} = analysis_players{2,2}(row,:);
 
     %Variables to compare selected from analysis_players{2,2}
-    temp = array2table(zeros(num_rows,5));
-    temp.Properties.VariableNames = {'total', 'min_sea', 'opp_team_position_sea','fppg_sea', 'fppg_3g'};
+    variables = {'total',...
+                 'min_sea',...
+                 'fppg_sea',...
+                 'opp_team_fppg_position_sea',...
+                 'team_pace_sea',...
+                 'opp_pace_sea',...
+                  };
 
+    temp = array2table(zeros(num_rows,length(variables)));
+    temp.Properties.VariableNames = variables;
     analysis_players{3,3} = [analysis_players{3,2}(:,[1, 3:4]) temp];
 
-    %calculate opposing team position fantasy points allowed rating
-    analysis_players{3,3}.opp_team_position_sea = comp_trans_opp_pos(num_rows, analysis_teams{1,2}.team_id, analysis_players{3,2}.opp_id, analysis_teams{1,2}, analysis_players{3,2}.position);
-
-    %Calcualte variable ratings
+    
+    %Calcualte season minutes ratings
     analysis_players{3,3}.min_sea = variable_rating(analysis_players{3,2}.min_sea);
 
-    %Calcualte variable ratings
+    %Calcualte season ffpg ratings
     analysis_players{3,3}.fppg_sea = variable_rating(analysis_players{3,2}.fppg);
+  
+    %calculate opposing team position fantasy points allowed rating
+    analysis_players{3,3}.opp_team_fppg_position_sea = comp_trans_opp_pos(num_rows, analysis_teams{1,2}.team_id, analysis_players{3,2}.opp_id, analysis_teams{1,2}, analysis_players{3,2}.position);
 
-    %Calcualte variable ratings
-%     analysis_players{3,3}.3g_fppg = variable_rating(analysis_players{3,2}.3g_fppg);
+    %Calculate team/opp pace rating
+    rating_pace = team_rating(import{13,2}.pace);
+    analysis_players{3,3}.team_pace_sea = comp_trans(import{13,2}.team_id, analysis_players{3,2}.team_id, rating_pace);
+    analysis_players{3,3}.opp_pace_sea = comp_trans(import{13,2}.team_id, analysis_players{3,2}.opp_id, rating_pace);    
+
     
-    
-    
-    %calculate player rating
+    %calculate player rating total    
     analysis_players{3,3}.total = sum(analysis_players{3,3}{:,[5:end]},2);
 
-    
-    
-    
-    
-    
-    clear num_rows temp row
+
+    clear num_rows temp row variables rating_pace
 
 
 %SECTION C.2    
@@ -403,26 +415,52 @@
         analysis_players{j+3,2} = analysis_players{2,2}(row,:);
 
         %Variables to compare
-        temp = array2table(zeros(num_rows,5));
-        temp.Properties.VariableNames = {'total', 'min_sea', 'opp_team_position_sea','fppg','fppg_3g'};
+        variables = {'total',...
+                     'min_sea',...
+                     'fppg_sea',...
+                     'opp_team_fppg_position_sea',...
+                     'team_pace_sea',...
+                     'opp_pace_sea',...
+                      };
 
-        analysis_players{j+3,3} = [analysis_players{j+3,2}(:,[1, 3:4]) temp];
+        temp = array2table(zeros(num_rows,length(variables)));
+        temp.Properties.VariableNames = variables;
+        analysis_players{j+3,3} = [analysis_players{j+3,2}(:,[1:6,9]) temp];
 
         %incorporate opposing team position fantasy points allowed rating
-        analysis_players{j+3,3}.opp_team_position_sea = comp_trans_opp_pos(num_rows, analysis_teams{1,2}.team_id, analysis_players{j+3,2}.opp_id, analysis_teams{1,2}, analysis_players{j+3,2}.position);
+        analysis_players{j+3,3}.opp_team_fppg_position_sea = comp_trans_opp_pos(num_rows, analysis_teams{1,2}.team_id, analysis_players{j+3,2}.opp_id, analysis_teams{1,2}, analysis_players{j+3,2}.position);
 
+        %Calcualte season ffpg ratings
+        analysis_players{j+3,3}.fppg_sea = variable_rating(analysis_players{j+3,2}.fppg);
+          
         %Calcualte variable ratings
         analysis_players{j+3,3}.min_sea = variable_rating(analysis_players{j+3,2}.min_sea);
 
-        %calculate player rating
-        analysis_players{j+3,3}.total = sum(analysis_players{j+3,3}{:,[5:end]},2);    
+        %Calculate team/opp pace rating
+        rating_pace = team_rating(import{13,2}.pace);
+        analysis_players{j+3,3}.team_pace_sea = comp_trans(import{13,2}.team_id, analysis_players{j+3,2}.team_id, rating_pace);
+        analysis_players{j+3,3}.opp_pace_sea = comp_trans(import{13,2}.team_id, analysis_players{j+3,2}.opp_id, rating_pace);    
+
+    
+        %calculate player rating total
+        analysis_players{j+3,3}.total = sum(analysis_players{j+3,3}{:,[9:end]},2);    
     end
     
-    clear temp row num_rows num_players j
+    clear temp row num_rows num_players j rating_pace variables
      
+%SECTION C.3
+    %delete players with negative rating
+    for j = 1:6
+        row = find(analysis_players{2+j,3}.total>=0);
+        analysis_players{2+j,4} = analysis_players{2+j,3}(row,:);
+    end
     
     
-%SECTION C.6
+    clear compare row j
+
+
+    
+%SECTION C.4
     %export data to excel file
     
     cd('/Users/ccm/Documents/Fantasy_Basketball/export');
@@ -433,7 +471,7 @@
     writetable(analysis_players{6,2},'ex_c_rating.csv');
     writetable(analysis_players{7,2},'ex_sf_rating.csv');
     writetable(analysis_players{8,2},'ex_sg_rating.csv');
-
+    cd('/Users/ccm/Documents/Fantasy_Basketball/analysis');
 %SECTION C
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

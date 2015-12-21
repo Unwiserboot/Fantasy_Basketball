@@ -31,6 +31,12 @@
     import_orig{10,1} = 'reg_sea_team_opp_guard';
     import_orig{11,2} = import_trad('reg_sea_player_trad_3gme.csv');
     import_orig{11,1} = 'reg_sea_player_trad_3gme';
+    import_orig{12,2} = import_gme_logs('reg_sea_team_game_logs.csv');
+    import_orig{12,1} = 'reg_sea_team_game_logs';
+    import_orig{13,2} = import_team_adv('reg_sea_team_adv.csv');
+    import_orig{13,1} = 'reg_sea_team_adv';
+    
+    
     
     %Make all table variables lower case for easy programming
     for i = 1:length(import_orig)         

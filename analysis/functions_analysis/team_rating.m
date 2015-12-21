@@ -17,7 +17,7 @@ function [ rating ] = team_rating( metric)
 
             rating(i) = 2;
 
-        elseif metric(i) > average + 3*deviation
+        elseif metric(i) > average + 2*deviation
 
             rating(i) = 3;
 
@@ -29,7 +29,7 @@ function [ rating ] = team_rating( metric)
 
             rating(i) = -2;
 
-        elseif metric(i) < average - 3*deviation
+        elseif metric(i) < average - 2*deviation 
 
             rating(i) = -3;
 

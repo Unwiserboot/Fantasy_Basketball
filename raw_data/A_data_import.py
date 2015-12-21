@@ -11,6 +11,7 @@
     #Section 8 - regular season team opponent guard
     #Section 9 - regular season player traditional 3 game
     #Section 10 - regular season team game logs
+    #Section 11 - regular season team advanced
 
 #Indicator to use python3
 #!/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5
@@ -198,5 +199,22 @@ with open('reg_sea_team_game_logs.csv', 'w') as fw:  # Export data to excel file
     csv.writer(fw).writerows(data)
 
 #SECTION 10
+##########################################################################################################
+##########################################################################################################
+#SECTION 11
+#2015 2016 regular season team advanced
+
+url = 'http://stats.nba.com/stats/leaguedashteamstats?Conference=&DateFrom=&DateTo=&Division=&GameScope=&GameSegment=&LastNGames=0&LeagueID=00&Location=&MeasureType=Advanced&Month=0&OpponentTeamID=0&Outcome=&PORound=0&PaceAdjust=N&PerMode=Totals&Period=0&PlayerExperience=&PlayerPosition=&PlusMinus=N&Rank=N&Season=2015-16&SeasonSegment=&SeasonType=Regular+Season&ShotClockRange=&StarterBench=&TeamID=0&VsConference=&VsDivision='
+
+response = requests.get(url)
+response.raise_for_status()  # raise exception if invalid response
+data = response.json()['resultSets'][0]['rowSet']  # Player data
+header = response.json()['resultSets'][0]['headers']  # Header abbreviations
+
+with open('reg_sea_team_adv.csv', 'w') as fw:  # Export data to excel file
+    csv.writer(fw).writerow(header)
+    csv.writer(fw).writerows(data)
+
+#SECTION 11
 ##########################################################################################################
 ##########################################################################################################

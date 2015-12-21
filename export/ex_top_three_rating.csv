@@ -1,6 +1,6 @@
-player_id,firstname,lastname,total,min_sea,opp_team_position_sea,fppg_sea,fppg_3g
-201935,James,Harden,5,2,1,2,0
-2544,LeBron,James,4,1,2,1,0
-202326,DeMarcus,Cousins,-1,-1,-1,1,0
-200765,Rajon,Rondo,2,1,2,-1,0
-202738,Isaiah,Thomas,-6,-2,-2,-2,0
+player_id,firstname,lastname,total,min_sea,fppg_sea,opp_team_fppg_position_sea,team_pace_sea,opp_pace_sea
+201935,James,Harden,8,2,2,1,1,2
+2544,LeBron,James,4,1,1,2,-2,2
+202326,DeMarcus,Cousins,4,-1,1,1,2,1
+200765,Rajon,Rondo,5,1,-1,2,2,1
+202738,Isaiah,Thomas,-6,-2,-2,-2,2,-2
