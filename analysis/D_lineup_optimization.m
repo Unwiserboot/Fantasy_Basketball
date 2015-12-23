@@ -7,31 +7,33 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %SECTION A
     %This section produces possible lineups to consider
-
+    number_top_three = 10;
+    number_bot_six = 55;
 %SECTION A.1
-     %Create possible combinations of top players players   
+    %Create possible combinations of top ten players players   
     z = 0;
-    for i = 1:height(analysis_players{3,3})-2
-        temp = [analysis_players{3,2}(i+1:end,[1:2,5:6,9]) analysis_players{3,3}(i+1:end,4) analysis_players{3,2}(i+1:end,8)]; 
+    top_players = analysis_players{2,3}(1:number_top_three,:);
+    for i = 1:height(top_players)-2
+        temp = [top_players(i+1:end,[1:2,5:8])]; 
         for k = 1:size(temp,1)
-            temp2 = [analysis_players{3,2}(i+1+k:end,[1:2,5:6,9]) analysis_players{3,3}(i+1+k:end,4) analysis_players{3,2}(i+1+k:end,8)];            
+            temp2 = [top_players(i+k+1:end,[1:2,5:8])];
             for j = 1:size(temp2,1)
                 
-                fppg_total = analysis_players{3,2}.fppg(i)+temp.fppg(k)+temp2.fppg(j);
-                salary_total = analysis_players{3,2}.salary(i)+temp.salary(k)+temp2.salary(j);
-                rating_total = analysis_players{3,3}.total(i)+temp.total(k)+temp2.total(j);
-                position = strcat(analysis_players{3,2}.position(i), temp.position(k), temp2.position(j));
-                teams = strcat(analysis_players{3,2}.team(i), temp.team(k), temp2.team(j));   
+                fppg_total = top_players.fppg(i)+temp.fppg(k)+temp2.fppg(j);
+                salary_total = top_players.salary(i)+temp.salary(k)+temp2.salary(j);
+                rating_total = top_players.total(i)+temp.total(k)+temp2.total(j);
+                position = strcat(top_players.position(i), temp.position(k), temp2.position(j));
+                teams = strcat(top_players.team(i), temp.team(k), temp2.team(j));   
                 price_per_point = salary_total/rating_total;
                      
                 z = z + 1;
-                temp_lineups(z,:) = {fppg_total,...
+                temp3(z,:) = {fppg_total,...
                                      salary_total,...
                                      rating_total,...
                                      price_per_point,...
                                      position,...
                                      teams,...
-                                     analysis_players{3,3}.player_id(i),...
+                                     top_players.player_id(i),...
                                      temp.player_id(k),...
                                      temp2.player_id(j)};                        
             end
@@ -39,8 +41,8 @@
     end
     
     %Conver to table
-    temp_lineups = cell2table(temp_lineups); 
-    temp_lineups.Properties.VariableNames = {'fppg',...
+    temp3 = cell2table(temp3); 
+    temp3.Properties.VariableNames = {'fppg',...
                                               'salary',...
                                               'rating',...
                                               'price_per_point',...
@@ -51,19 +53,18 @@
                                               'player3',...
                                                };
     
-    clear fppg_total salary_total rating_total position teams i j k temp temp2 z price_per_point
-
+    
 %SECTION A.2
     %Delete any combinations that have too many position players
-    row_del = zeros(size(temp_lineups,1),1); %rows to delete
-    for i = 1:size(temp_lineups,1)
+    row_del = zeros(size(temp3,1),1); %rows to delete
+    for i = 1:size(temp3,1)
 
         %incorrect number of player positions
-        c = strfind(temp_lineups.positions,import_positions{3,1});
-        pg = strfind(temp_lineups.positions,import_positions{1,1});
-        pf = strfind(temp_lineups.positions,import_positions{2,1});
-        sf = strfind(temp_lineups.positions,import_positions{4,1});
-        sg = strfind(temp_lineups.positions,import_positions{5,1});
+        c = strfind(temp3.positions,import_positions{3,1});
+        pg = strfind(temp3.positions,import_positions{1,1});
+        pf = strfind(temp3.positions,import_positions{2,1});
+        sf = strfind(temp3.positions,import_positions{4,1});
+        sg = strfind(temp3.positions,import_positions{5,1});
         
         if length(c{1,1}) > 1
             row_del(i) = i;
@@ -83,23 +84,16 @@
     end
     
     row_del(row_del == 0) = [];
-    temp_lineups(row_del,:) = [];
+    temp3(row_del,:) = [];
+    temp3 = sortrows(temp3,'rating','descend');
     
-    clear row_del c pg sf pf sg i
+
     
 %SECTION A.3   
-    %select top rated lineup
-    compare = eq(max(temp_lineups.rating),temp_lineups.rating);
-    row = find(compare == 1);
-    lineup = temp_lineups(row,:);
-    
-    %select top rated lineup for least amount of money
-    compare = eq(min(lineup.salary),lineup.salary);
-    row = find(compare == 1);
-    analysis_lineup{1,2} = temp_lineups(row,:);
-    analysis_lineup{1,1} = 'Possible Lineups';
-    
-    clear row compare lineup temp_lineups
+    analysis_lineup{1,2} = temp3(1:number_top_three,:);
+    analysis_lineup{1,1} = 'Line Up Number 1';
+
+    clear top players fppg_total salary_total temp3 rating_total position teams i j k temp temp2 z price_per_point pg pf sf sg top_players c row_del
     
 %SECTION A
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -114,8 +108,7 @@
     
 %SECTION B.1
     %Calculate needed player positions for a given lineup
-   
-    positions_needed = cell(size(analysis_lineup{1,2},1),5);
+    positions_needed = cell(number_top_three,5);
     analysis_lineup{2,2} = cell2table(positions_needed);
     analysis_lineup{2,2}.Properties.VariableNames = {'C',...
                                                   'PG',...
@@ -124,181 +117,214 @@
                                                   'SF'};
     analysis_lineup{2,1} = 'Needed Player Positions';                                         
 
-
     for i = 1:size(analysis_lineup{1,2},1)
 
         %calculate players at each position
-        c = strfind(analysis_lineup{1,2}.positions,import_positions{3,1});
-        pg = strfind(analysis_lineup{1,2}.positions,import_positions{1,1});
-        pf = strfind(analysis_lineup{1,2}.positions,import_positions{2,1});
-        sf = strfind(analysis_lineup{1,2}.positions,import_positions{4,1});
-        sg = strfind(analysis_lineup{1,2}.positions,import_positions{5,1});
+        c = strfind(analysis_lineup{1,2}.positions{i},import_positions{3,1});
+        pg = strfind(analysis_lineup{1,2}.positions{i},import_positions{1,1});
+        pf = strfind(analysis_lineup{1,2}.positions{i},import_positions{2,1});
+        sf = strfind(analysis_lineup{1,2}.positions{i},import_positions{4,1});
+        sg = strfind(analysis_lineup{1,2}.positions{i},import_positions{5,1});
 
-        analysis_lineup{2,2}.C = abs(length(c{1,1}) - 1);
-        analysis_lineup{2,2}.PG = abs(length(pg{1,1}) - 2);
-        analysis_lineup{2,2}.PF = abs(length(pf{1,1}) - 2);
-        analysis_lineup{2,2}.SG = abs(length(sf{1,1}) - 2);
-        analysis_lineup{2,2}.SF = abs(length(sg{1,1}) - 2);
+        analysis_lineup{2,2}.C{i} = abs(length(c) - 1);
+        analysis_lineup{2,2}.PG{i} = abs(length(pg) - 2);
+        analysis_lineup{2,2}.PF{i} = abs(length(pf) - 2);
+        analysis_lineup{2,2}.SF{i} = abs(length(sf) - 2);
+        analysis_lineup{2,2}.SG{i} = abs(length(sg) - 2);
     end
 
-    clear i c pg pf sf sg positions_needed
-   
+    clear i c pg pf sf sg positions_needed   
 
 %SECTION B.2
     %Calculate needed player positions for a given lineup    
     
     %Calculate necessary loop requirements for filling out the necessary
     %positions
+    lineup = cell2mat(analysis_lineup{2,2}{1,:});
     for i = 1:6
-      position = find(eq(max(analysis_lineup{2,2}{1,:}),analysis_lineup{2,2}{1,:}));  
-      
-      if position(1) == 1
-          loop(i,1) = size(analysis_players{6,4},1);
-          loop(i,2) = 6;
-          
-      elseif position(1) == 2
-          loop(i,1) = size(analysis_players{4,4},1);
-          loop(i,2) = 4;
-          
-      elseif position(1) == 3
-          loop(i,1) = size(analysis_players{5,4},1);
-          loop(i,2) = 5;
-      
-      elseif position(1) == 4
-          loop(i,1) = size(analysis_players{8,4},1);    
-          loop(i,2) = 8;
-        
-      elseif position(1) == 5
-          loop(i,1) = size(analysis_players{7,4},1);
-          loop(i,2) = 7;
-      end
-      
-      analysis_lineup{2,2}.(position(1)) = analysis_lineup{2,2}.(position(1)) - 1;
-        
+        position = find(eq(max(lineup),lineup));  
+
+        if position(1) == 1
+            loop(i,1) = size(analysis_players{6,4},1);
+            loop(i,2) = 6;
+
+        elseif position(1) == 2
+            loop(i,1) = size(analysis_players{4,4},1);
+            loop(i,2) = 4;
+
+        elseif position(1) == 3
+            loop(i,1) = size(analysis_players{5,4},1);
+            loop(i,2) = 5;
+
+        elseif position(1) == 4
+            loop(i,1) = size(analysis_players{8,4},1);    
+            loop(i,2) = 8;
+
+        elseif position(1) == 5
+            loop(i,1) = size(analysis_players{7,4},1);
+            loop(i,2) = 7;
+        end
+        lineup(position(1)) = lineup(position(1)) - 1;        
     end
-    
+
     loop = sortrows(loop,2);
-    
+
 
 %SECTION A.2
-    %Calculate possible lineups with remaining players
-    z = 0;
-    temp_lineups = cell(1,6);
-    temp = [analysis_players{loop(1,2),4}(:,1:8)];     
-    for a = 1:size(temp,1)
+    %Calculate possible lineups with remaining players       
+    for i = 1:2
+        temp3 = cell(1,8);
+        z = 0;
         
-        comp = eq(loop(1,2),loop(2,2));
-        if comp == 1
-            temp1 = [analysis_players{loop(2,2),4}(1+a:end,1:8)]; 
-        else
-            temp1 = [analysis_players{loop(2,2),4}(:,1:8)];
-        end
+        %Delete duplicate players 
+        temp = analysis_players{loop(i,2),4}(:,1:8);
+        comp = eq(temp.player_id, analysis_lineup{1,2}.player1(1));
+        row = find(comp == 1);
+        temp(row,:) = [];
         
-        for b = 1:size(temp1,1)
+        comp1 = eq(temp.player_id, analysis_lineup{1,2}.player2(1));
+        row = find(comp1 == 1);
+        temp(row,:) = [];
+        
+        comp2 = eq(temp.player_id, analysis_lineup{1,2}.player3(1));
+        row = find(comp2 == 1);
+        temp(row,:) = [];        
+        
+        for a = 1:size(temp,1)
 
-            comp = eq(loop(2,2),loop(3,2));
-            if comp == 1
-                temp2 = [analysis_players{loop(3,2),4}(b+1:end,1:8)]; 
-            else
-                temp2 = [analysis_players{loop(3,2),4}(:,1:8)];
-            end 
-                
-            for c = 1:size(temp2,1)
-                    
-                comp = eq(loop(3,2),loop(4,2));
-                if comp == 1
-                    temp3 = [analysis_players{loop(4,2),4}(c+1:end,1:8)]; 
-                else
-                    temp3 = [analysis_players{loop(4,2),4}(:,1:8)];
-                end 
-                         
-                for d = 1:size(temp3,1)
-                   
-                    comp = eq(loop(4,2),loop(5,2));
-                    if comp == 1
-                        temp4 = [analysis_players{loop(5,2),4}(d+1:end,1:8)]; 
-                    else
-                        temp4 = [analysis_players{loop(5,2),4}(:,1:8)];
-                    end
-                
-                
-                    for e = 1:size(temp4,1)
+            temp1 = [analysis_players{loop(i+2,2),4}(:,1:8)];
+            comp = eq(temp.player_id, analysis_lineup{1,2}.player1(1));
+            row = find(comp == 1);
+            temp1(row,:) = [];
+
+            comp1 = eq(temp.player_id, analysis_lineup{1,2}.player2(1));
+            row = find(comp1 == 1);
+            temp1(row,:) = [];
+
+            comp2 = eq(temp.player_id, analysis_lineup{1,2}.player3(1));
+            row = find(comp2 == 1);
+            temp1(row,:) = [];
                        
-                        comp = eq(loop(5,2),loop(6,2));
-                        if comp == 1
-                            temp5 = [analysis_players{loop(6,2),4}(e+1:end,1:8)]; 
-                        else
-                            temp5 = [analysis_players{loop(6,2),4}(:,1:8)];
-                        end
-                    
-                        for f = 1:size(temp5,1)
-                            
-                            
-%                             fppg_total = analysis_players{4,2}.fppg(a)+temp.fppg(b)+temp2.fppg(c)+...
-%                                        temp3.fppg(d)+temp4.fppg(e)+temp5.fppg(f);
-%                             salary_total = analysis_players{4,2}.salary(a)+temp.salary(b)+temp2.salary(c)+...
-%                                        temp3.salary(d)+temp4.salary(e)+temp5.salary(f);
-%                             rating_total = analysis_players{4,3}.total(a)+temp.total(b)+temp2.total(c)+...
-%                                        temp3.total(d)+temp4.total(e)+temp5.total(f);
-%                             position = strcat(analysis_players{4,2}.position(a), temp.position(b), temp2.position(c),...
-%                                         temp3.position(d),temp4.position(e),temp5.position(f));
-%                             teams = strcat(analysis_players{4,2}.team(a), temp.team(b), temp2.team(c),...
-%                                         temp3.team(d),temp4.team(e),temp5.team(f));  
-% 
-%                             fppg_total = fppg_total + temp_lineups{i,1};
-%                             salary_total = salary_total + temp_lineups{i,2};
-%                             rating_total = rating_total + temp_lineups{i,3};
-%                             position = strcat(position, temp_lineups{i,4});
-%                             teams = strcat(teams, temp_lineups{i,5});
+            for b = 1:size(temp1,1)
 
-                            z = z + 1;
-%                             temp_lineups(z,:) = [fppg_total,...
-%                                                  salary_total,...
-%                                                  rating_total,...
-%                                                  position,...
-%                                                  teams,...
-%                                                  temp_lineups(i,6:8),...
-                            temp_lineups(z,:) = {temp.player_id(a),...
-                                                 temp.player_id(b),...
-                                                 temp2.player_id(c),...
-                                                 temp3.player_id(d),...
-                                                 temp4.player_id(e),...
-                                                 temp5.player_id(f)};    
-                        end
-                    end
+                temp2 = [analysis_players{loop(4+i,2),4}(:,1:8)];                 
+                comp = eq(temp.player_id, analysis_lineup{1,2}.player1(1));
+                row = find(comp == 1);
+                temp2(row,:) = [];
+
+                comp1 = eq(temp.player_id, analysis_lineup{1,2}.player2(1));
+                row = find(comp1 == 1);
+                temp2(row,:) = [];
+
+                comp2 = eq(temp.player_id, analysis_lineup{1,2}.player3(1));
+                row = find(comp2 == 1);
+                temp2(row,:) = [];
+                
+                for c = 1:size(temp2,1)
+
+                    fppg_total = temp.fppg(a) + temp1.fppg(b) + temp2.fppg(c);
+                    salary_total = temp.salary(a) + temp1.salary(b) + temp2.salary(c);
+                    rating_total = temp.total(a) + temp1.total(b) + temp2.total(c);
+                    position = strcat(temp.position(a), temp1.position(b), temp2.position(c));
+                    teams = strcat(temp.team(a), temp1.team(b), temp2.team(c));  
+
+                    z = z + 1;
+                    temp3(z,:) = {fppg_total,...
+                                         salary_total,...
+                                         rating_total,...
+                                         position,...
+                                         teams,...
+                                         temp.player_id(a),...
+                                         temp1.player_id(b),...
+                                         temp2.player_id(c),...
+                                         }; 
+
                 end
             end
         end
-    end   
+        temp3 = sortrows(temp3,-3);
+%         temp3 = temp3(1:number_bot_six,:);
+        temp3 = array2table(temp3);
+        temp3.Properties.VariableNames = {'fppg',...
+                                          'salary',...
+                                          'rating',...
+                                          'positions',...
+                                          'teams',...
+                                          'player1',...
+                                          'player2',...
+                                          'player3'};
+                                      
+    %Delete lineups that cost too much
+        max_salary = 60000 - 3*4500 - analysis_lineup{1,2}.salary(1);
+        row = find(cell2mat(temp3.salary) < max_salary);
     
+        temp_lineups{1,i} = temp3(row,:);    
+    end
     
+    clear i a b c temp temp1 temp2 temp3 row comp1 comp2 comp loop lineup rating_total salary_total team z position fppg_total
     
-    
-    
-    
-    
-    
-    
-    
-%SECTION B
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %Combine all possible lineup ratios
+    temp = cell(1,14);
+    z = 0;
+    for a = 1:size(temp_lineups{1,1},1)       
+        for b = 1:size(temp_lineups{1,2},1)
+            
+            fppg_total = temp_lineups{1,1}.fppg{a} + temp_lineups{1,2}.fppg{b} + analysis_lineup{1,2}.fppg(1);
+            salary_total = temp_lineups{1,1}.salary{a} + temp_lineups{1,2}.salary{b} + analysis_lineup{1,2}.salary(1);
+            rating_total = temp_lineups{1,1}.rating{a} + temp_lineups{1,2}.rating{b} + analysis_lineup{1,2}.rating(1);
+            position = strcat(temp_lineups{1,1}.positions{a}, temp_lineups{1,2}.positions{b}, analysis_lineup{1,2}.positions(1));
+            teams = strcat(temp_lineups{1,1}.teams{a}, temp_lineups{1,2}.teams{b}, analysis_lineup{1,2}.teams(1));  
 
-%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%SECTION C
+            z = z + 1;
+            temp(z,:) = {fppg_total,...
+                         salary_total,...
+                         rating_total,...
+                         position,...
+                         teams,...
+                         temp_lineups{1,1}.player1{a},...
+                         temp_lineups{1,1}.player2{a},...
+                         temp_lineups{1,1}.player3{a},...
+                         temp_lineups{1,2}.player1{b},...
+                         temp_lineups{1,2}.player2{b},...
+                         temp_lineups{1,2}.player3{b},...
+                         analysis_lineup{1,2}.player1(1),...
+                         analysis_lineup{1,2}.player2(1),...
+                         analysis_lineup{1,2}.player3(1),...
+                         };            
+        end        
+    end
+    temp = sortrows(temp,2);
+    temp = array2table(temp);
+    temp.Properties.VariableNames = {'fppg',...
+                                      'salary',...
+                                      'rating',...
+                                      'positions',...
+                                      'teams',...
+                                      'player1',...
+                                      'player2',...
+                                      'player3',...
+                                      'player4',...
+                                      'player5',...
+                                      'player6',...
+                                      'player7',...
+                                      'player8',...
+                                      'player9'};
+    temp_lineups{1,3} = temp;
+    
+    clear z rating_total salary_total teams position b a fppg_teams temp
+    
+                      
     %This section delete lineups that do not meet necessary restrictions
     
-    row_del = zeros(size(temp_lineups,1),1); %rows to delete
-    for i = 1:size(temp_lineups,1)
+    row_del = zeros(size(temp_lineups{1,3},1),1); %rows to delete
+    for i = 1:size(temp_lineups{1,3},1)
 
         %incorrect number of player positions
-        c = strfind(temp_lineups(i,4),import_positions{3,1});
-        pg = strfind(temp_lineups(i,4),import_positions{1,1});
-        pf = strfind(temp_lineups(i,4),import_positions{2,1});
-        sf = strfind(temp_lineups(i,4),import_positions{4,1});
-        sg = strfind(temp_lineups(i,4),import_positions{5,1});
+        c = strfind(temp_lineups{1,3}.positions{i},import_positions{3,1});
+        pg = strfind(temp_lineups{1,3}.positions{i},import_positions{1,1});
+        pf = strfind(temp_lineups{1,3}.positions{i},import_positions{2,1});
+        sf = strfind(temp_lineups{1,3}.positions{i},import_positions{4,1});
+        sg = strfind(temp_lineups{1,3}.positions{i},import_positions{5,1});
         
         if length(c{1,1}) > 1
             row_del(i) = i;
@@ -318,37 +344,55 @@
         
         
         %delete rows that are above salary cap or below 50,000
-        if temp_lineups{i,2} > import_scoring.salary_cap
+        if temp_lineups{1,3}.salary{i} > import_scoring.salary_cap
            row_del(i) = i;
            
-        else if temp_lineups{i,2} < 50000
+        elseif temp_lineups{1,3}.salary{i} < 58000
            row_del(i) = i;
-            end
         end
         
         %delete rows with more than 4 players from one team
         for j = 1:length(import_teams)
-            team = strfind(temp_lineups(i,5),import_teams{j,1});
+            team = strfind(temp_lineups{1,3}.teams{i},import_teams{j,1});
             
             if length(team{1,1}) > 4
                 row_del(i) = i;
             end
-        end        
+        end
+        
+       %Find duplicate player id numbers
+       playerid = cell2mat(table2array(temp_lineups{1,3}(i,[6:14])));
+       duplicate = length(unique(playerid));
+       if duplicate < 9
+           row_del(i) = i;       
+    
+       end
     end
     
-    %Delete inelligible rows
+    %Delete ineligible rows
     row_del(row_del == 0) = [];
-    temp_lineups(row_del,:) = [];
+    temp_lineups{1,3}(row_del,:) = [];
     
     clear temp i j team sg sf pf pg c row_del row 
+                            
+     
+    
+%SECTION B
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%SECTION C
 
 
 
 
 
 % %SECTION C.5
-    %Export workspace variables to .mat file
-    save(['/Users/ccm/Documents/Fantasy_Basketball/export/ex_workspace_variables'])
+%     %Export workspace variables to .mat file
+%     save(['/Users/ccm/Documents/Fantasy_Basketball/export/ex_workspace_variables'])
 
 
 %SECTION C

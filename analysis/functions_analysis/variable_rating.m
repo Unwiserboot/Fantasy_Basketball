@@ -16,8 +16,8 @@ function [ rating ] = variable_rating( metric)
         elseif metric(i) > average + deviation && metric(i) < average + 2*deviation            
 
             rating(i) = 2;
-
-        elseif metric(i) > average + 3*deviation
+                    
+        elseif metric(i) > average + 2*deviation
 
             rating(i) = 3;
 
@@ -29,7 +29,7 @@ function [ rating ] = variable_rating( metric)
 
             rating(i) = -2;
 
-        elseif metric(i) < average - 3*deviation
+        elseif metric(i) < average - 2*deviation
 
             rating(i) = -3;
 

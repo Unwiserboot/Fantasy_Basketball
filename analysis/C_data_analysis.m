@@ -336,14 +336,6 @@
     analysis_players{2,2}.opp_pace_sea = comp_trans(import{13,2}.team_id, analysis_players{2,2}.opp_id,import{13,2}.pace);
     
     
-    
-    
-    
-    
-    
-    
-
-
 
 
 %SECTION B
@@ -358,15 +350,12 @@
 %lineup optimization 
    
 %SECTION C.1    
-    %pick top three starters among all positions
-
-    %Select players and create new cell for analysis
-    %Salary above $8000 and uninjured
-    analysis_players{3,1} = 'Pick Top Three';
-    row = find(analysis_players{2,2}.salary >= 8000 & analysis_players{2,2}.injury_rating == 1);
-    num_rows = length(row);
-    analysis_players{3,2} = analysis_players{2,2}(row,:);
-
+    %calculate ratings for all players
+    
+    %Remove injured players from list
+    row = find(analysis_players{2,2}.injury_rating == 2);
+    analysis_players{2,2}(row,:) = [];
+  
     %Variables to compare selected from analysis_players{2,2}
     variables = {'total',...
                  'min_sea',...
@@ -375,84 +364,56 @@
                  'team_pace_sea',...
                  'opp_pace_sea',...
                   };
-
+    
+    num_rows = size(analysis_players{2,2},1);
     temp = array2table(zeros(num_rows,length(variables)));
     temp.Properties.VariableNames = variables;
-    analysis_players{3,3} = [analysis_players{3,2}(:,[1, 3:4]) temp];
-
+    analysis_players{2,3} = [analysis_players{2,2}(:,[1:6,9]) temp];
     
     %Calcualte season minutes ratings
-    analysis_players{3,3}.min_sea = variable_rating(analysis_players{3,2}.min_sea);
+    analysis_players{2,3}.min_sea = variable_rating(analysis_players{2,2}.min_sea);
 
     %Calcualte season ffpg ratings
-    analysis_players{3,3}.fppg_sea = variable_rating(analysis_players{3,2}.fppg);
+    analysis_players{2,3}.fppg_sea = variable_rating(analysis_players{2,2}.fppg);
   
     %calculate opposing team position fantasy points allowed rating
-    analysis_players{3,3}.opp_team_fppg_position_sea = comp_trans_opp_pos(num_rows, analysis_teams{1,2}.team_id, analysis_players{3,2}.opp_id, analysis_teams{1,2}, analysis_players{3,2}.position);
+    analysis_players{2,3}.opp_team_fppg_position_sea = comp_trans_opp_pos(num_rows, analysis_teams{1,2}.team_id, analysis_players{2,2}.opp_id, analysis_teams{1,2}, analysis_players{2,2}.position);
 
     %Calculate team/opp pace rating
     rating_pace = team_rating(import{13,2}.pace);
-    analysis_players{3,3}.team_pace_sea = comp_trans(import{13,2}.team_id, analysis_players{3,2}.team_id, rating_pace);
-    analysis_players{3,3}.opp_pace_sea = comp_trans(import{13,2}.team_id, analysis_players{3,2}.opp_id, rating_pace);    
+    analysis_players{2,3}.team_pace_sea = comp_trans(import{13,2}.team_id, analysis_players{2,2}.team_id, rating_pace);
+    analysis_players{2,3}.opp_pace_sea = comp_trans(import{13,2}.team_id, analysis_players{2,2}.opp_id, rating_pace);    
 
     
     %calculate player rating total    
-    analysis_players{3,3}.total = sum(analysis_players{3,3}{:,[5:end]},2);
-
+    analysis_players{2,3}.total = sum(analysis_players{2,3}{:,[8:end]},2);
+    
+    %Sort by total rating descending
+    analysis_players{2, 3} = sortrows(analysis_players{2, 3},'total','descend');
 
     clear num_rows temp row variables rating_pace
-
 
 %SECTION C.2    
     %organize players by position
     
     %Select players and create new cell for analysis
-    %Salary below $8000 and uninjured, sorted by position
+    %Uninjured, sorted by position
     for j = 1:5
         analysis_players{j+3,1} = import_positions{j};
-        row = find(analysis_players{2,2}.salary < 8000 & analysis_players{2,2}.injury_rating == 1 & strcmp(analysis_players{2,2}.position, import_positions{j}) == 1);
-        num_rows = length(row);
+        row = find(strcmp(analysis_players{2,2}.position, import_positions{j}) == 1);
         analysis_players{j+3,2} = analysis_players{2,2}(row,:);
 
-        %Variables to compare
-        variables = {'total',...
-                     'min_sea',...
-                     'fppg_sea',...
-                     'opp_team_fppg_position_sea',...
-                     'team_pace_sea',...
-                     'opp_pace_sea',...
-                      };
-
-        temp = array2table(zeros(num_rows,length(variables)));
-        temp.Properties.VariableNames = variables;
-        analysis_players{j+3,3} = [analysis_players{j+3,2}(:,[1:6,9]) temp];
-
-        %incorporate opposing team position fantasy points allowed rating
-        analysis_players{j+3,3}.opp_team_fppg_position_sea = comp_trans_opp_pos(num_rows, analysis_teams{1,2}.team_id, analysis_players{j+3,2}.opp_id, analysis_teams{1,2}, analysis_players{j+3,2}.position);
-
-        %Calcualte season ffpg ratings
-        analysis_players{j+3,3}.fppg_sea = variable_rating(analysis_players{j+3,2}.fppg);
-          
-        %Calcualte variable ratings
-        analysis_players{j+3,3}.min_sea = variable_rating(analysis_players{j+3,2}.min_sea);
-
-        %Calculate team/opp pace rating
-        rating_pace = team_rating(import{13,2}.pace);
-        analysis_players{j+3,3}.team_pace_sea = comp_trans(import{13,2}.team_id, analysis_players{j+3,2}.team_id, rating_pace);
-        analysis_players{j+3,3}.opp_pace_sea = comp_trans(import{13,2}.team_id, analysis_players{j+3,2}.opp_id, rating_pace);    
-
-    
-        %calculate player rating total
-        analysis_players{j+3,3}.total = sum(analysis_players{j+3,3}{:,[9:end]},2);    
+        row = find(strcmp(analysis_players{2,3}.position, import_positions{j}) == 1);
+        analysis_players{j+3,3} = analysis_players{2,3}(row,:);  
     end
     
-    clear temp row num_rows num_players j rating_pace variables
+    clear j row 
      
-%SECTION C.3
+% %SECTION C.3
     %delete players with negative rating
-    for j = 1:6
-        row = find(analysis_players{2+j,3}.total>=0);
-        analysis_players{2+j,4} = analysis_players{2+j,3}(row,:);
+    for j = 1:5
+        row = find(analysis_players{3+j,3}.total>=0);
+        analysis_players{3+j,4} = analysis_players{3+j,3}(row,:);
     end
     
     
@@ -465,7 +426,6 @@
     
     cd('/Users/ccm/Documents/Fantasy_Basketball/export');
     writetable(analysis_players{2,2},'ex_analysis_players.csv');
-    writetable(analysis_players{3,3},'ex_top_three_rating.csv');
     writetable(analysis_players{4,2},'ex_pg_rating.csv');
     writetable(analysis_players{5,2},'ex_pf_rating.csv');
     writetable(analysis_players{6,2},'ex_c_rating.csv');
