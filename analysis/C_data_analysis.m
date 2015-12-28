@@ -383,7 +383,6 @@
     rating_pace = team_rating(import{13,2}.pace);
     analysis_players{2,3}.team_pace_sea = comp_trans(import{13,2}.team_id, analysis_players{2,2}.team_id, rating_pace);
     analysis_players{2,3}.opp_pace_sea = comp_trans(import{13,2}.team_id, analysis_players{2,2}.opp_id, rating_pace);    
-
     
     %calculate player rating total    
     analysis_players{2,3}.total = sum(analysis_players{2,3}{:,[8:end]},2);
