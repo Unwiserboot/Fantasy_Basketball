@@ -1,7 +1,6 @@
 %B_import
     %import data into matlab workspace. run once to save on computation
     %time
-    ccc
 
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -36,8 +35,7 @@
     import_orig{13,2} = import_team_adv('reg_sea_team_adv.csv');
     import_orig{13,1} = 'reg_sea_team_adv';
     
-    
-    
+        
     %Make all table variables lower case for easy programming
     for i = 1:length(import_orig)         
         

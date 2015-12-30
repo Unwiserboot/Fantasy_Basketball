@@ -1,13 +1,17 @@
 %C_data_analysis
     %run this script after running B_import to clean up the data and analyze it    
     clearvars -except import_orig
-    clc
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %SECTION A
     %This section cleans up data in preparation for analysis
 
+    %VARIABLE 1: Number of players at each position to inclue in
+    %lineups
+    players_to_analize = 10;
+        
+        
 %SECTION A.1
     %save original import data
     import = import_orig;
@@ -16,7 +20,32 @@
     %create variables from import data
     import_scoring = import{1,2}(1,1:10);
     import_positions = import{1,2}.position(1:5);
+
+      
+%SECTION A.3
+    %Delete injured players from Fanduel cell
+    num_players = height(import{2,2});
+    
+    for i = 1:num_players
+        if strcmp(import{2,2}.injuryindicator(i), 'O') == 1 
+            del(i) = i;
+            
+        elseif strcmp(import{2,2}.injuryindicator(i), 'IR') == 1
+            del(i) = i;
+        
+        elseif strcmp(import{2,2}.injuryindicator(i), 'NA') == 1
+            del(i) = i;
+        end
+    end
+    
+    del = del(del~=0);
+    import{2,2}(del,:) = [];
+    
+    %Teams playing that night abbreviation
     import_teams = unique(import{2,2}.team);
+    
+    clear i del
+
     
 %SECTION A.3
     %make team abbreviation in fandual table the same as NBA.com data
@@ -79,11 +108,13 @@
     for i = 1:length(import{2,2}.lastname)
 
         %Look for similar last names
-        compare_lastname = strcmpi(import{2,2}.lastname(i), player_names(:,2));
+        temp1 = strsplit(import{2,2}.lastname{i});
+        compare_lastname = strcmpi(temp1(end), player_names(:,2));
         row_lastname = find(compare_lastname == 1);
         
         %Look for similar first names
-        compare_firstname = strcmpi(import{2,2}.firstname(i), player_names(:,1));
+        temp1 = strsplit(import{2,2}.firstname{i});
+        compare_firstname = strcmpi(temp1(1), player_names(:,1));
         row_firstname = find(compare_firstname == 1);
         
         %Look for similar team names
@@ -176,8 +207,7 @@
     num_players = height(import{2,2});
     analysis_players = cell(8,3);
             
-    variables = {'injury_rating',...
-                 'home_away',...
+    variables = {'home_away',...
                  'min_sea'...
                  'price_per_fp_sea',...
                  'fppg_3g',...
@@ -194,7 +224,7 @@
     analysis_players{2,1} = 'All Players';
     analysis_players{1,2} = 'Data';
     analysis_players{1,3} = 'Ratings';
-    analysis_players{1,4} = 'Positive Rating';
+    analysis_players{1,4} = 'Players To Consider';
     
     %delete players for whom there is no data on nba.com
     for i = 1:import_nodata
@@ -203,7 +233,7 @@
     end
     analysis_players{2,2}(del,:) = [];
     
-    clear temp i del num_players variables
+    clear temp i del num_players variables import_nodata
     
 %SECTION B.2
     %Calculate opponent team fantasy points allowed by team and 
@@ -225,28 +255,6 @@
     
     clear i row_team compare_team_id temp num_players
     
-%SECTION B.3
-    %assign rating for injuries
-    %1 - good to play
-    %2 - out of game
-    num_players = height(analysis_players{2,2});
-    
-    for i = 1:num_players
-        if strcmp(import{2,2}.injuryindicator(i), 'O') == 1 
-            analysis_players{2,2}.injury_rating(i) = 2;
-            
-        elseif strcmp(import{2,2}.injuryindicator(i), 'IR') == 1
-            analysis_players{2,2}.injury_rating(i) = 2;
-        
-        elseif strcmp(import{2,2}.injuryindicator(i), 'NA') == 1
-            analysis_players{2,2}.injury_rating(i) = 2;
-        
-        else 
-            analysis_players{2,2}.injury_rating(i) = 1;
-        end
-    end
-    
-    clear i
     
 %SECTION B.4
     %calculate price per fantasy point    
@@ -321,8 +329,8 @@
         
     home = strncmp(analysis_players{2,2}.game, analysis_players{2,2}.team,3);
     rows = find(home == 1);
-    analysis_players{2,2}.home_away(rows) = 1;   
-
+    analysis_players{2,2}.home_away(rows) = 1;
+    
     away = strncmp(analysis_players{2,2}.game, analysis_players{2,2}.opponent,3);
     rows = find(away == 1);
     analysis_players{2,2}.home_away(rows) = -1;  
@@ -335,8 +343,6 @@
     analysis_players{2,2}.team_pace_sea = comp_trans(import{13,2}.team_id, analysis_players{2,2}.team_id,import{13,2}.pace);
     analysis_players{2,2}.opp_pace_sea = comp_trans(import{13,2}.team_id, analysis_players{2,2}.opp_id,import{13,2}.pace);
     
-    
-
 
 %SECTION B
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -351,10 +357,6 @@
    
 %SECTION C.1    
     %calculate ratings for all players
-    
-    %Remove injured players from list
-    row = find(analysis_players{2,2}.injury_rating == 2);
-    analysis_players{2,2}(row,:) = [];
   
     %Variables to compare selected from analysis_players{2,2}
     variables = {'total',...
@@ -396,7 +398,7 @@
     %organize players by position
     
     %Select players and create new cell for analysis
-    %Uninjured, sorted by position
+    %Sorted by position
     for j = 1:5
         analysis_players{j+3,1} = import_positions{j};
         row = find(strcmp(analysis_players{2,2}.position, import_positions{j}) == 1);
@@ -409,15 +411,17 @@
     clear j row 
      
 % %SECTION C.3
-    %delete players with negative rating
+    %select top players for lineup analysis
     for j = 1:5
-        row = find(analysis_players{3+j,3}.total>=0);
-        analysis_players{3+j,4} = analysis_players{3+j,3}(row,:);
+        if height(analysis_players{3+j,3}) > players_to_analize
+            analysis_players{3+j,4} = analysis_players{3+j,3}(1:players_to_analize,:);
+        
+        else 
+            analysis_players{3+j,4} = analysis_players{3+j,3}(1:end,:);
+        end
     end
-    
-    
-    clear compare row j
-
+        
+    clear compare row j players_to_analize
 
     
 %SECTION C.4
@@ -430,7 +434,7 @@
     writetable(analysis_players{6,2},'ex_c_rating.csv');
     writetable(analysis_players{7,2},'ex_sf_rating.csv');
     writetable(analysis_players{8,2},'ex_sg_rating.csv');
-    cd('/Users/ccm/Documents/Fantasy_Basketball/analysis');
+    cd('/Users/ccm/Documents/Fantasy_Basketball');
 %SECTION C
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
