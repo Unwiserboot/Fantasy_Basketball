@@ -7,22 +7,42 @@
 %SECTION A
     %This section cleans up data in preparation for analysis
 
-    %VARIABLE 1: Number of players at each position to inclue in
-    %lineups
-    players_to_analize = 10;
-        
-        
 %SECTION A.1
+    %This section holds all variables that can be changed for teh analysis
+    
+    %VARIABLE 1: Number of players at each position to analyze
+    players_to_analize = 15;
+    
+    %VARIABLE 2: number of top players to consider
+    number_top_players = 10;
+    
+    %VARIABLE 3: number of lineups of top players to create
+    number_top_lineups = 10;
+    
+    %VARIABLE 4: Analysis Multiplier
+        %Tier 1: 1
+        %Tier 2: 2
+    multiplier = [3,... %minutes season
+                  2,... %fppg season
+                  1,... %opponent position fppg allowed season
+                  1,... %Team pace
+                  1,... %Opponent pace
+                  1,... %Home or away
+                  ];
+              
+                 
+                 
+%SECTION A.2
     %save original import data
     import = import_orig;
     
-%SECTION A.2    
+%SECTION A.3    
     %create variables from import data
     import_scoring = import{1,2}(1,1:10);
     import_positions = import{1,2}.position(1:5);
 
       
-%SECTION A.3
+%SECTION A.4
     %Delete injured players from Fanduel cell
     num_players = height(import{2,2});
     
@@ -47,7 +67,7 @@
     clear i del
 
     
-%SECTION A.3
+%SECTION A.5
     %make team abbreviation in fandual table the same as NBA.com data
     %need to check for incorrect abbreviation in fanduel spreadsheet on a
     %given night
@@ -80,7 +100,7 @@
     clear i row compare_abbrev
     
     
-%SECTION A.4    
+%SECTION A.6    
     %replace fanduel player id number with nba.com player id number
         
     %split player first and last names from reg_sea_player_trad
@@ -159,7 +179,7 @@
           compare_firstname compare_lastname num_players num_unique unique_ids...
           compare_team temp1
         
-%SECTION A.5
+%SECTION A.7
     %Assign team ID from NBA.com to fandual data in new columns
 
     %Create two empty single column tables in fandual table
@@ -256,15 +276,15 @@
     clear i row_team compare_team_id temp num_players
     
     
-%SECTION B.4
+%SECTION B.3
     %calculate price per fantasy point    
     analysis_players{2,2}.price_per_fp_sea = analysis_players{2,2}.salary./analysis_players{2,2}.fppg;
     
-%SECTION B.5
+%SECTION B.4
     %assign minutes per game   
     analysis_players{2,2}.min_sea = comp_trans(import{5,2}.player_id, analysis_players{2,2}.player_id, import{5,2}.min);
    
-%SECTION B.6
+%SECTION B.5
     %calculate player previous 3 game fppg
     num_players = height(import{11,2});
     temp_multiplier = [import_scoring.blocks,...        %blocks
@@ -314,19 +334,19 @@
      clear i rows row dest_data fppg_3g compare temp temp2 temp_data...
            temp_multiplier num_players
     
-%SECTION B.7
+%SECTION B.6
     %calculate minutes for previous 3 games    
     analysis_players{2,2}.min_3g = comp_trans(import{11,2}.player_id, analysis_players{2,2}.player_id, import{11,2}.min);
     
-%SECTION B.8
+%SECTION B.7
     %calculate price per fantasy point    
     analysis_players{2,2}.price_per_fp_3g = analysis_players{2,2}.salary./analysis_players{2,2}.fppg_3g;
        
-%Section B.9
+%Section B.8
     %indicate whether home or away
     % 1 - home
     % -1 - away
-        
+      
     home = strncmp(analysis_players{2,2}.game, analysis_players{2,2}.team,3);
     rows = find(home == 1);
     analysis_players{2,2}.home_away(rows) = 1;
@@ -337,7 +357,7 @@
 
     clear home away rows
 
-%Section B.10
+%Section B.9
     %team pace season
     
     analysis_players{2,2}.team_pace_sea = comp_trans(import{13,2}.team_id, analysis_players{2,2}.team_id,import{13,2}.pace);
@@ -365,6 +385,7 @@
                  'opp_team_fppg_position_sea',...
                  'team_pace_sea',...
                  'opp_pace_sea',...
+                 'home_away',...
                   };
     
     num_rows = size(analysis_players{2,2},1);
@@ -386,8 +407,17 @@
     analysis_players{2,3}.team_pace_sea = comp_trans(import{13,2}.team_id, analysis_players{2,2}.team_id, rating_pace);
     analysis_players{2,3}.opp_pace_sea = comp_trans(import{13,2}.team_id, analysis_players{2,2}.opp_id, rating_pace);    
     
+    %Home_Away rating
+    analysis_players{2,3}.home_away = analysis_players{2,2}.home_away;
+    
+    %Impliment Point Multiplier
+    for i = 1:size(analysis_players{2,3},1)
+        
+       analysis_players{2,3}{i,[9:end]} = analysis_players{2,3}{i,[9:end]}.* multiplier; 
+    end
+    
     %calculate player rating total    
-    analysis_players{2,3}.total = sum(analysis_players{2,3}{:,[8:end]},2);
+    analysis_players{2,3}.total = sum(analysis_players{2,3}{:,[9:end]},2);
     
     %Sort by total rating descending
     analysis_players{2, 3} = sortrows(analysis_players{2, 3},'total','descend');
@@ -424,17 +454,17 @@
     clear compare row j players_to_analize
 
     
-%SECTION C.4
-    %export data to excel file
-    
-    cd('/Users/ccm/Documents/Fantasy_Basketball/export');
-    writetable(analysis_players{2,2},'ex_analysis_players.csv');
-    writetable(analysis_players{4,2},'ex_pg_rating.csv');
-    writetable(analysis_players{5,2},'ex_pf_rating.csv');
-    writetable(analysis_players{6,2},'ex_c_rating.csv');
-    writetable(analysis_players{7,2},'ex_sf_rating.csv');
-    writetable(analysis_players{8,2},'ex_sg_rating.csv');
-    cd('/Users/ccm/Documents/Fantasy_Basketball');
+% %SECTION C.4
+%     %export data to excel file
+%     
+%     cd('/Users/ccm/Documents/Fantasy_Basketball/export');
+%     writetable(analysis_players{2,2},'ex_analysis_players.csv');
+%     writetable(analysis_players{4,2},'ex_pg_rating.csv');
+%     writetable(analysis_players{5,2},'ex_pf_rating.csv');
+%     writetable(analysis_players{6,2},'ex_c_rating.csv');
+%     writetable(analysis_players{7,2},'ex_sf_rating.csv');
+%     writetable(analysis_players{8,2},'ex_sg_rating.csv');
+%     cd('/Users/ccm/Documents/Fantasy_Basketball');
 %SECTION C
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

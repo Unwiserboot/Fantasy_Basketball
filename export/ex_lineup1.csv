@@ -1,3 +1,11 @@
-fppg,salary,rating,positions,teams,temp1,temp2,temp3,temp4,temp5,temp6,temp7,temp8,temp9
-252.5,59700,71,PFSFSGCSFSGPGPFPG,INDINDGSWGSWGSWSACSACGSWWAS,Lavoy Allen,Paul George,Klay Thompson,Andrew Bogut,Andre Iguodala,Ben McLemore,Rajon Rondo,Draymond Green,John Wall
-254.9,59600,71,PFSFSGCSFSGPGPFPG,INDINDGSWGSWGSWSACSACGSWWAS,Lavoy Allen,Paul George,Klay Thompson,Andrew Bogut,Andre Iguodala,Marco Belinelli,Rajon Rondo,Draymond Green,John Wall
+teams,positions,fppg,salary,rating,player1,player2,player3,player4,player5,player6,player7,player8,player9
+PHIOKCHOUDALDETDENOKCDETDEN,PGPFSFPFSFSGPGCSG,261.5,60000,108,Isaiah Canaan,Serge Ibaka,Trevor Ariza,Dirk Nowitzki,Marcus Morris,Gary Harris,Russell Westbrook,Andre Drummond,Will Barton
+PHIOKCORLDALHOUOKCOKCDETDEN,PGPFSFPFSFSGPGCSG,265.2,59900,108,TJ McConnell,Serge Ibaka,Tobias Harris,Dirk Nowitzki,Trevor Ariza,Dion Waiters,Russell Westbrook,Andre Drummond,Will Barton
+PHIOKCHOUDALDETDENOKCDETDEN,PGPFSFPFSFSGPGCSG,263.2,59300,108,TJ McConnell,Serge Ibaka,Trevor Ariza,Dirk Nowitzki,Marcus Morris,Gary Harris,Russell Westbrook,Andre Drummond,Will Barton
+DENOKCDENHOUHOUDENOKCDETDEN,PGPFSFPFSFSGPGCSG,256.8,59900,107,Jameer Nelson,Serge Ibaka,Danilo Gallinari,Terrence Jones,Trevor Ariza,Gary Harris,Russell Westbrook,Andre Drummond,Will Barton
+PHIOKCDENHOUHOUDENOKCDETDEN,PGPFSFPFSFSGPGCSG,257.5,59500,107,Isaiah Canaan,Serge Ibaka,Danilo Gallinari,Clint Capela,Trevor Ariza,Gary Harris,Russell Westbrook,Andre Drummond,Will Barton
+PHIOKCDENHOUHOUDENOKCDETDEN,PGPFSFPFSFSGPGCSG,255.5,59300,107,Isaiah Canaan,Serge Ibaka,Danilo Gallinari,Terrence Jones,Trevor Ariza,Gary Harris,Russell Westbrook,Andre Drummond,Will Barton
+PHIOKCDENDALHOULACOKCDETDEN,PGPFSFPFSFSGPGCSG,266.9,60000,107,TJ McConnell,Serge Ibaka,Danilo Gallinari,Dirk Nowitzki,Trevor Ariza,Jamal Crawford,Russell Westbrook,Andre Drummond,Will Barton
+PHIOKCDENNOPHOUDENOKCDETDEN,PGPFSFPFSFSGPGCSG,264.5,59400,107,TJ McConnell,Serge Ibaka,Danilo Gallinari,Ryan Anderson,Trevor Ariza,Gary Harris,Russell Westbrook,Andre Drummond,Will Barton
+PHIOKCDENHOUORLDENOKCDETDEN,PGPFSFPFSFSGPGCSG,264.4,60000,107,TJ McConnell,Serge Ibaka,Danilo Gallinari,Clint Capela,Tobias Harris,Gary Harris,Russell Westbrook,Andre Drummond,Will Barton
+PHIOKCDENHOUHOUDENOKCDETDEN,PGPFSFPFSFSGPGCSG,259.2,58800,107,TJ McConnell,Serge Ibaka,Danilo Gallinari,Clint Capela,Trevor Ariza,Gary Harris,Russell Westbrook,Andre Drummond,Will Barton

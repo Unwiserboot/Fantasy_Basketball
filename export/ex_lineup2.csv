@@ -1,2 +1,11 @@
-fppg,salary,rating,positions,teams,temp1,temp2,temp3,temp4,temp5,temp6,temp7,temp8,temp9
-255.2,59700,73,PGCSFPFSFSGPGPFPG,LALATLINDINDGSWGSWSACGSWSAC,Jordan Clarkson,Al Horford,Paul George,Lavoy Allen,Andre Iguodala,Klay Thompson,Rajon Rondo,Draymond Green,Darren Collison
+teams,positions,fppg,salary,rating,player1,player2,player3,player4,player5,player6,player7,player8,player9
+OKCOKCDENPHIHOULACOKCOKCGSW,PFCSGPFSFSGPGSFPG,262.9,59800,102,Serge Ibaka,Steven Adams,Gary Harris,Jerami Grant,Trevor Ariza,Jamal Crawford,Russell Westbrook,Kevin Durant,Stephen Curry
+OKCOKCDENPHIDETLACOKCOKCGSW,PFCSGPFSFSGPGSFPG,265,60000,100,Serge Ibaka,Steven Adams,Gary Harris,Jerami Grant,Marcus Morris,Jamal Crawford,Russell Westbrook,Kevin Durant,Stephen Curry
+NOPOKCDENHOUHOUOKCOKCOKCGSW,PFCSGPFSFSGPGSFPG,262.5,59900,100,Ryan Anderson,Steven Adams,Gary Harris,Clint Capela,Trevor Ariza,Dion Waiters,Russell Westbrook,Kevin Durant,Stephen Curry
+NOPOKCDENHOUHOUOKCOKCOKCGSW,PFCSGPFSFSGPGSFPG,260.5,59700,100,Ryan Anderson,Steven Adams,Gary Harris,Terrence Jones,Trevor Ariza,Dion Waiters,Russell Westbrook,Kevin Durant,Stephen Curry
+HOUOKCDENHOUHOUOKCOKCOKCGSW,PFCSGPFSFSGPGSFPG,255.2,59100,100,Clint Capela,Steven Adams,Gary Harris,Terrence Jones,Trevor Ariza,Dion Waiters,Russell Westbrook,Kevin Durant,Stephen Curry
+OKCOKCDENHOUGSWLACOKCOKCGSW,PFCSGPFSFSGPGSFPG,261.7,59900,99,Serge Ibaka,Steven Adams,Gary Harris,Clint Capela,Andre Iguodala,Jamal Crawford,Russell Westbrook,Kevin Durant,Stephen Curry
+OKCOKCDENHOUPHILACOKCOKCGSW,PFCSGPFSFSGPGSFPG,262.2,59900,99,Serge Ibaka,Steven Adams,Gary Harris,Terrence Jones,Robert Covington,Jamal Crawford,Russell Westbrook,Kevin Durant,Stephen Curry
+OKCOKCDENHOUGSWLACOKCOKCGSW,PFCSGPFSFSGPGSFPG,259.7,59700,99,Serge Ibaka,Steven Adams,Gary Harris,Terrence Jones,Andre Iguodala,Jamal Crawford,Russell Westbrook,Kevin Durant,Stephen Curry
+OKCOKCDENCHAHOULACOKCOKCGSW,PFCSGPFSFSGPGSFPG,261.7,60000,99,Serge Ibaka,Steven Adams,Gary Harris,Cody Zeller,Trevor Ariza,Jamal Crawford,Russell Westbrook,Kevin Durant,Stephen Curry
+DALOKCOKCPHIHOULACOKCOKCGSW,PFCSGPFSFSGPGSFPG,264.4,60000,99,Dirk Nowitzki,Steven Adams,Dion Waiters,Jerami Grant,Trevor Ariza,Jamal Crawford,Russell Westbrook,Kevin Durant,Stephen Curry
